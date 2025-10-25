@@ -1,14 +1,16 @@
 name: Deploy to GitHub Pages
 
-# Run this workflow every time a new commit is pushed to the main branch
 on:
   push:
     branches: [ main ]
 
-# Jobs to be executed
+# Grant the workflow permissions to write to the repository.
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest # Use the latest version of Ubuntu
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,7 +18,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Use Node.js version 20
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
@@ -28,4 +30,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist # The folder where Vite builds your app
+          publish_dir: ./dist
