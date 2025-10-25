@@ -728,13 +728,27 @@ input:checked + .slider:before {
   gap: 0.5rem;
   font-size: 0.9rem;
   color: #5f6368;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-wrap: wrap;
+  /* Button reset styles */
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s;
+}
+.breadcrumbs:hover {
+  color: #1a73e8;
 }
 .dark-mode .breadcrumbs {
   color: #9e9e9e;
 }
+.dark-mode .breadcrumbs:hover {
+  color: #8ab4f8;
+}
+
 
 .logo {
   font-weight: bold;
@@ -956,13 +970,14 @@ input:checked + .slider:before {
   background-color: #3b4d9a;
   color: white;
   border: none;
-  border-radius: 20px;
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: default; /* Not clickable */
   white-space: nowrap;
 }
+
 .dark-mode .timer-btn {
   background-color: #4f5b9e;
 }

@@ -749,7 +749,7 @@ function FilterSection({
 }
 
 // --- Quiz View Components ---
-function Breadcrumbs({ filters }: { filters: typeof initialFilters }) {
+function Breadcrumbs({ filters, onNavigateBack }: { filters: typeof initialFilters; onNavigateBack: () => void; }) {
   const crumbs = ['Filters'];
   if (filters.subject.length) crumbs.push(filters.subject.join(', '));
   if (filters.topic.length) crumbs.push(filters.topic.join(', '));
@@ -757,14 +757,14 @@ function Breadcrumbs({ filters }: { filters: typeof initialFilters }) {
   if (filters.difficulty.length) crumbs.push(filters.difficulty.join(', '));
   
   return (
-    <div className="breadcrumbs">
+    <button className="breadcrumbs" onClick={onNavigateBack} title="Back to filter settings">
       {crumbs.map((crumb, index) => (
         <React.Fragment key={index}>
           <span>{crumb}</span>
           {index < crumbs.length - 1 && <FiChevronsRight />}
         </React.Fragment>
       ))}
-    </div>
+    </button>
   );
 }
 
@@ -1056,7 +1056,7 @@ function QuizSection({
                 <QuestionComponent
                     question={question}
                     selectedAnswer={userAnswer}
-                    hiddenOptions={hiddenOptions}
+                    hiddenOptions={hiddenOptions[question.id] || []}
                     onAnswerSelect={onAnswerSelect}
                     zoomLevel={zoomLevel}
                 />
@@ -1919,7 +1919,7 @@ function App() {
             variants={pageVariants} transition={pageTransition}
           >
             <div className="quiz-top-header">
-              <Breadcrumbs filters={selectedFilters} />
+              <Breadcrumbs filters={selectedFilters} onNavigateBack={() => setView('filter')} />
               <div className="logo">CGL Hustle</div>
               <div className="quiz-header-controls">
                 <button className="header-control-btn" onClick={handleToggleFullscreen} aria-label="Toggle Fullscreen">
