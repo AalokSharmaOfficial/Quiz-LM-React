@@ -495,7 +495,7 @@ function SegmentedControl({
             role="checkbox" 
             aria-checked={isSelected}
           >
-            {option} <span className="filter-option-count">({count})</span>
+            {option} <span className="filter-option-count">({counts ? counts[option] : count})</span>
           </button>
         )
       })}
@@ -1327,23 +1327,30 @@ function NavigationPanel({
 }
 
 function ReviewSection({
-  questions, userAnswers, onBackToScore, bookmarkedQuestions
+  questions, userAnswers, onBackToScore, bookmarkedQuestions, onGoHome
 }: {
   questions: Question[], userAnswers: {[key: string]: string},
-  onBackToScore: () => void, bookmarkedQuestions: string[]
+  onBackToScore: () => void, bookmarkedQuestions: string[], onGoHome: () => void,
 }) {
   const [filter, setFilter] = useState<'all' | 'correct' | 'incorrect' | 'bookmarked'>('all');
   const [reviewIndex, setReviewIndex] = useState(0);
 
+  const counts = useMemo(() => ({
+    all: questions.length,
+    correct: questions.filter(q => userAnswers[q.id] === q.correct).length,
+    incorrect: questions.filter(q => userAnswers[q.id] && userAnswers[q.id] !== q.correct && userAnswers[q.id] !== 'SKIPPED' && userAnswers[q.id] !== 'TIME_UP').length,
+    bookmarked: bookmarkedQuestions.length,
+  }), [questions, userAnswers, bookmarkedQuestions]);
+
   const filteredQuestions = React.useMemo(() => {
-    const filtered = questions.filter(q => {
-      const userAnswer = userAnswers[q.id];
-      if (filter === 'all') return true;
-      if (filter === 'correct') return userAnswer === q.correct;
-      if (filter === 'incorrect') return userAnswer && userAnswer !== q.correct;
-      if (filter === 'bookmarked') return bookmarkedQuestions.includes(q.id);
-      return false;
-    });
+    let filtered = questions;
+    if (filter === 'correct') {
+      filtered = questions.filter(q => userAnswers[q.id] === q.correct);
+    } else if (filter === 'incorrect') {
+      filtered = questions.filter(q => userAnswers[q.id] && userAnswers[q.id] !== q.correct);
+    } else if (filter === 'bookmarked') {
+      filtered = questions.filter(q => bookmarkedQuestions.includes(q.id));
+    }
     setReviewIndex(0); // Reset index on filter change
     return filtered;
   }, [filter, questions, userAnswers, bookmarkedQuestions]);
@@ -1353,13 +1360,17 @@ function ReviewSection({
   return (
     <div className="review-section">
       <div className="review-header">
-        <h2>Review Answers</h2>
-        <button onClick={onBackToScore} className="back-btn">Back to Score</button>
+        <h2>REVIEW ANSWERS</h2>
+        <div className="review-header-actions">
+            <button onClick={onGoHome} className="home-btn">Go to Home</button>
+            <button onClick={onBackToScore} className="back-btn">Back to Score</button>
+        </div>
       </div>
        <SegmentedControl
           options={['all', 'correct', 'incorrect', 'bookmarked']}
-          selectedOptions={[filter]} // Adapted for multi-select component
+          selectedOptions={[filter]}
           onOptionToggle={(option) => setFilter(option as any)}
+          counts={counts}
         />
       <div className="review-questions-list">
         {currentQuestion ? (
@@ -1377,10 +1388,10 @@ function ReviewSection({
         ) : <p>No questions match this filter.</p>}
       </div>
       {filteredQuestions.length > 1 && (
-        <div className="review-navigation quiz-navigation">
-          <button onClick={() => setReviewIndex(i => i - 1)} disabled={reviewIndex === 0}>Previous</button>
+        <div className="review-navigation">
+          <button onClick={() => setReviewIndex(i => Math.max(0, i - 1))} disabled={reviewIndex === 0}>Previous</button>
           <span>{reviewIndex + 1} / {filteredQuestions.length}</span>
-          <button onClick={() => setReviewIndex(i => i + 1)} disabled={reviewIndex === filteredQuestions.length - 1}>Next</button>
+          <button onClick={() => setReviewIndex(i => Math.min(filteredQuestions.length - 1, i + 1))} disabled={reviewIndex === filteredQuestions.length - 1}>Next</button>
         </div>
       )}
     </div>
@@ -1964,6 +1975,7 @@ function App() {
             <ReviewSection
               questions={quizQuestions} userAnswers={userAnswers}
               onBackToScore={handleBackToScore} bookmarkedQuestions={bookmarkedQuestions}
+              onGoHome={handlePlayAgain}
             />
           </motion.div>
         )}
