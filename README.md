@@ -3,26 +3,48 @@
 A modern, feature-rich quiz application built with React and Vite, designed for comprehensive exam preparation with a polished UI and an advanced, data-driven filtering system. Deployed with a professional CI/CD workflow.
 
 ---
-
-# ⭐ The Golden Rule: Dual-Environment Development ⭐
-
-**ATTENTION ALL DEVELOPERS: This project has a unique development workflow that you MUST follow.**
-
-This application is maintained in two parallel environments:
-
-1.  **GOOGLE AI Studio Live Environment:** A monolithic structure using the root-level `index.tsx` and `index.css` files. This is used for live, interactive development within certain tools.
-2.  **Standard Vite Build Environment:** A professionally structured, modular project located within the `src/` directory. This is used for local development, testing, and automated deployment via GitHub Actions.
-
-### The Rule: Update only required , never these 2  `index.tsx` and `index.css` at root level..
-
-Any change—whether it's a new feature, a bug fix, a UI tweak, or a content update— **MUST be implemented ANYWHERE IT NEEDED EXCEPT THE ROOT LEVEL TWO SPECIFIC FILES namely - `index.tsx` and `index.css` at root level.**. HOWEVER You are Free to make necessary change in any other files of root level like `index.html` the main file and other files also.
-
-- So If you change `src/components/QuizView/QuizSection.tsx`, you **MUST** make the equivalent change in the `QuizSection` function within the /src folder `index.tsx`only and not the root level `index.tsx`.
--   If you add a style to `src/index.css`, you **should not** add that same style to the root `index.css` leave it at the owner He will do it himself. This will save your time.
-
-Failure to do this will lead to wastage of time and resources. **No exceptions.**
-
 ---
+
+# ⭐ The Golden Rule: All Development Happens in `src/` ⭐
+
+**ATTENTION ALL DEVELOPERS:** This project uses a specific dual-environment workflow. To prevent build failures and merge conflicts, you **MUST** follow this rule.
+
+### 1. The Two Environments
+
+This repository maintains two parallel versions of the application:
+
+* **`src/` Directory (Your Workspace):** This is the standard, modular Vite environment. All development, testing, and pull requests happen here. This is the source of truth for our production build.
+* **Root Files (Owner's Zone):** The `index.tsx` and `index.css` files in the root directory. These are a special, *monolithic* (single-file) build used *only* for a live demo environment in Google AI Studio.
+
+### 2. Your Core Responsibility: Stay Inside `src/`
+
+Your work should **ONLY** be done inside the `src/` directory.
+
+* **DO:** Make all your changes to components, logic, and styles inside `src/`. (e.g., `src/App.tsx`, `src/components/Quiz.tsx`, `src/main.css`).
+* **DO NOT:** Edit the root-level `index.tsx` or `index.css` files for *any reason*.
+
+The project owner is solely responsible for syncing the approved changes from `src/` into the root monolithic files. Any direct edits you make to them will be overwritten and will break the live demo.
+
+### 3. Example Workflow
+
+* ✅ **CORRECT:**
+    1.  You need to add a new feature.
+    2.  You create a new file: `src/components/NewFeature.tsx`.
+    3.  You add styles to: `src/main.css`.
+    4.  You import the feature in: `src/App.tsx`.
+    5.  You commit *only* the files within the `src/` directory.
+
+* ❌ **INCORRECT:**
+    1.  You add the new feature in `src/components/NewFeature.tsx`.
+    2.  You then open the **root `index.tsx`** and try to paste your new component code into it.
+    3.  You open the **root `index.css`** and paste your new styles.
+    *(This will cause conflicts and will be rejected.)*
+
+### 4. What *Can* You Edit at the Root Level?
+
+You are still free to modify other root-level *configuration* files as needed for your task (e.g., `index.html`, `vite.config.ts`, `package.json`).
+
+**TL;DR: Do all your work in `src/`. Never touch the root `index.tsx` or `index.css` files.**
 
 ## 2. Live Demo
 
