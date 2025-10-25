@@ -358,6 +358,7 @@ export function App() {
   const handlePlayAgain = () => setView('filter');
   const handleReviewAnswers = () => setView('review');
   const handleBackToScore = () => setView('score');
+  const handleGoHome = () => setView('filter');
   const handleJumpToQuestion = (index: number) => {
     setCurrentQuestionIndex(index);
     setIsNavOpen(false);
@@ -513,6 +514,7 @@ export function App() {
             <ReviewSection
               questions={quizQuestions} userAnswers={userAnswers}
               onBackToScore={handleBackToScore} bookmarkedQuestions={bookmarkedQuestions}
+              onGoHome={handleGoHome}
             />
           </motion.div>
         )}
