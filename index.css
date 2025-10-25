@@ -838,7 +838,9 @@ input:checked + .slider:before {
 }
 
 .quiz-main-header {
-  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .quiz-subject-header {
@@ -855,14 +857,9 @@ input:checked + .slider:before {
 .dark-mode .quiz-subject-header { color: #9e9e9e; }
 
 .quiz-collapsible-trigger {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
     background-color: transparent;
     border: none;
     padding: 0;
-    margin-bottom: 1.5rem;
     cursor: pointer;
     text-align: left;
     color: inherit;

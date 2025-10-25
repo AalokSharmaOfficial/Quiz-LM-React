@@ -15,7 +15,7 @@ export const SettingsContext = createContext<SettingsContextType>({
   toggleBgAnimations: () => {},
 });
 
-export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
+export const SettingsProvider = ({ children }: { children?: React.ReactNode }) => {
   const [isDarkMode, setIsDarkMode] = useLocalStorageState('darkMode', false);
   const [areAnimationsEnabled, setAreAnimationsEnabled] = useLocalStorageState('animationsEnabled', true);
   const [isSoundEnabled, setIsSoundEnabled] = useLocalStorageState('soundEnabled', true);

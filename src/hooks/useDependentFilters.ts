@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import { InitialFilters } from '../types';
 
 /**
@@ -7,7 +7,7 @@ import { InitialFilters } from '../types';
  */
 export function useDependentFilters({ selectedFilters, setSelectedFilters, classificationMap }: {
   selectedFilters: InitialFilters;
-  setSelectedFilters: React.Dispatch<React.SetStateAction<InitialFilters>>;
+  setSelectedFilters: Dispatch<SetStateAction<InitialFilters>>;
   classificationMap: Map<string, Map<string, Set<string>>>;
 }) {
   const [availableTopics, setAvailableTopics] = useState<string[]>([]);
