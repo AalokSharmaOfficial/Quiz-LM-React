@@ -62,6 +62,18 @@ export function QuizSection({
 
     return (
         <div className="quiz-section-card">
+            <div className="quiz-main-header">
+                <h3 className="quiz-subject-header">{question.classification.subject} <FiHelpCircle /></h3>
+                <button
+                    className="quiz-collapsible-trigger"
+                    onClick={() => setIsStatsVisible(!isStatsVisible)}
+                    aria-expanded={isStatsVisible}
+                    aria-controls="quiz-stats-collapsible"
+                >
+                    <FiChevronDown className={`chevron-icon ${isStatsVisible ? 'open' : ''}`} />
+                </button>
+            </div>
+            
             <AnimatePresence>
                 {isStatsVisible && (
                     <motion.div
@@ -74,37 +86,25 @@ export function QuizSection({
                     >
                         <OverallProgressBar current={questionNumber - 1} total={totalQuestions} />
                         <QuizStatsBar correct={correctCount} wrong={wrongCount} remaining={remainingCount} />
+                        <div className="quiz-controls-toolbar">
+                            <button className="timer-btn">Time Left: {secondsLeft}s</button>
+                            <div className="quiz-tools">
+                                <button className="tool-btn" onClick={onZoomOut} disabled={zoomLevel <= 0.5} aria-label="Zoom out"><FiZoomOut /></button>
+                                <button className="tool-btn" onClick={onZoomIn} disabled={zoomLevel >= 2} aria-label="Zoom in"><FiZoomIn /></button>
+                                <button className="tool-btn ai-explainer-btn" onClick={onOpenAiModal} disabled={!isAnswered} aria-label="AI Explainer"><FaMagic/></button>
+                                <button className="tool-btn fifty-fifty-btn" onClick={onUseFiftyFifty} disabled={isFiftyFiftyUsed || isAnswered}>50:50</button>
+                                <button className="tool-btn" onClick={onOpenSettings} aria-label="Open settings"><FiSettings /></button>
+                            </div>
+                        </div>
+                         <div className="timer-bar-container">
+                            <div 
+                                className={`timer-bar ${isEnding && !isAnswered ? 'ending' : ''} ${flashClass}`}
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-            
-            <div className="quiz-main-header">
-                <button
-                    className="quiz-collapsible-trigger"
-                    onClick={() => setIsStatsVisible(!isStatsVisible)}
-                    aria-expanded={isStatsVisible}
-                    aria-controls="quiz-stats-collapsible"
-                >
-                    <h3 className="quiz-subject-header">{question.classification.subject} <FiHelpCircle /></h3>
-                    <FiChevronDown className={`chevron-icon ${isStatsVisible ? 'open' : ''}`} />
-                </button>
-                <div className="quiz-controls-toolbar">
-                    <button className="timer-btn">Time Left: {secondsLeft}s</button>
-                    <div className="quiz-tools">
-                        <button className="tool-btn" onClick={onZoomOut} disabled={zoomLevel <= 0.5} aria-label="Zoom out"><FiZoomOut /></button>
-                        <button className="tool-btn" onClick={onZoomIn} disabled={zoomLevel >= 2} aria-label="Zoom in"><FiZoomIn /></button>
-                        <button className="tool-btn ai-explainer-btn" onClick={onOpenAiModal} disabled={!isAnswered} aria-label="AI Explainer"><FaMagic/></button>
-                        <button className="tool-btn fifty-fifty-btn" onClick={onUseFiftyFifty} disabled={isFiftyFiftyUsed || isAnswered}>50:50</button>
-                        <button className="tool-btn" onClick={onOpenSettings} aria-label="Open settings"><FiSettings /></button>
-                    </div>
-                </div>
-                 <div className="timer-bar-container">
-                    <div 
-                        className={`timer-bar ${isEnding && !isAnswered ? 'ending' : ''} ${flashClass}`}
-                        style={{ width: `${progress}%` }}
-                    />
-                </div>
-            </div>
             
             <div className="quiz-scrollable-content">
                 <QuestionInfo 

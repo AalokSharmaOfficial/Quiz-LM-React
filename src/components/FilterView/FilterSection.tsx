@@ -57,11 +57,6 @@ export function FilterSection({
 
       <QuickStartButtons onQuickStart={onQuickStart} />
       
-      <ActiveFiltersBar 
-        selectedFilters={selectedFilters}
-        onRemoveFilter={onRemoveFilter}
-      />
-
       <div className="filter-groups-grid">
         <FilterGroup title="By Classification" icon={<FaSitemap />}>
           <FilterControl label="Subject">
@@ -148,6 +143,11 @@ export function FilterSection({
         </FilterGroup>
       </div>
       
+      <ActiveFiltersBar 
+        selectedFilters={selectedFilters}
+        onRemoveFilter={onRemoveFilter}
+      />
+
       <div className="filter-actions">
         <button onClick={onResetFilters} className="reset-filters-btn">
           <FiRefreshCw /> Reset Filters

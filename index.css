@@ -1313,6 +1313,95 @@ input:checked + .slider:before {
 .score-actions { display: flex; flex-wrap: wrap; gap: 1rem; width: 100%; margin-top: 1rem; }
 .play-again-btn, .review-answers-btn, .share-results-btn { flex: 1; min-width: 150px; padding: 1rem; font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
 
+/* --- Review Section --- */
+.review-section {
+  text-align: left;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.review-header h2 {
+  margin: 0;
+}
+
+.review-header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.back-btn, .home-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #dadce0;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.back-btn {
+  background-color: #f1f3f4;
+  color: #3c4043;
+}
+
+.dark-mode .back-btn {
+  background-color: #3c4043;
+  color: #e8eaed;
+  border-color: #5f63f8;
+}
+
+.back-btn:hover {
+  background-color: #e8eaed;
+}
+
+.dark-mode .back-btn:hover {
+  background-color: #4a4e52;
+}
+
+.home-btn {
+  background-color: #1a73e8;
+  color: #fff;
+  border-color: transparent;
+}
+
+.home-btn:hover {
+  background-color: #1865c7;
+}
+
+.dark-mode .home-btn {
+  background-color: #8ab4f8;
+  color: #1e1e1e;
+}
+
+.review-questions-list {
+  margin-top: 2rem;
+}
+
+.review-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+.dark-mode .review-navigation {
+  border-top-color: #424242;
+}
+.review-navigation button {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+
 /* --- Navigation Panel --- */
 .nav-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
