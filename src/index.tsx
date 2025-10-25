@@ -10,7 +10,6 @@ import { marked } from 'marked';
 import html2canvas from 'html2canvas';
 import { FiSettings, FiArchive, FiTag, FiRefreshCw, FiHelpCircle, FiZoomIn, FiZoomOut, FiMenu, FiChevronsRight, FiX, FiCheck, FiStar, FiFlag, FiMaximize, FiMinimize, FiClock, FiChevronDown } from 'react-icons/fi';
 import { FaRocket, FaSitemap, FaRegStar, FaStar, FaMagic } from 'react-icons/fa';
-import './index.css';
 
 
 // --- Type Definitions for New Data Structure ---
@@ -41,7 +40,7 @@ interface Explanation {
 }
 
 interface Question {
-  id: number;
+  id: string;
   sourceInfo: SourceInfo;
   classification: Classification;
   tags: string[];
@@ -639,11 +638,6 @@ function FilterSection({
 
       <QuickStartButtons onQuickStart={onQuickStart} />
       
-      <ActiveFiltersBar 
-        selectedFilters={selectedFilters}
-        onRemoveFilter={onRemoveFilter}
-      />
-
       <div className="filter-groups-grid">
         <FilterGroup title="By Classification" icon={<FaSitemap />}>
           <FilterControl label="Subject">
@@ -730,6 +724,11 @@ function FilterSection({
         </FilterGroup>
       </div>
       
+      <ActiveFiltersBar 
+        selectedFilters={selectedFilters}
+        onRemoveFilter={onRemoveFilter}
+      />
+
       <div className="filter-actions">
         <button onClick={onResetFilters} className="reset-filters-btn">
           <FiRefreshCw /> Reset Filters
@@ -786,7 +785,7 @@ function ExplanationComponent({ explanation }: { explanation: Explanation }) {
         return (
             <div className={`explanation-section ${className}`}>
                 <h4>{icon} {title}</h4>
-                <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+                <div dangerouslySetInnerHTML={{ __html: htmlContent as string}} />
             </div>
         );
     };
@@ -1002,6 +1001,18 @@ function QuizSection({
 
     return (
         <div className="quiz-section-card">
+            <div className="quiz-main-header">
+                <h3 className="quiz-subject-header">{question.classification.subject} <FiHelpCircle /></h3>
+                <button
+                    className="quiz-collapsible-trigger"
+                    onClick={() => setIsStatsVisible(!isStatsVisible)}
+                    aria-expanded={isStatsVisible}
+                    aria-controls="quiz-stats-collapsible"
+                >
+                    <FiChevronDown className={`chevron-icon ${isStatsVisible ? 'open' : ''}`} />
+                </button>
+            </div>
+            
             <AnimatePresence>
                 {isStatsVisible && (
                     <motion.div
@@ -1014,37 +1025,25 @@ function QuizSection({
                     >
                         <OverallProgressBar current={questionNumber - 1} total={totalQuestions} />
                         <QuizStatsBar correct={correctCount} wrong={wrongCount} remaining={remainingCount} />
+                        <div className="quiz-controls-toolbar">
+                            <button className="timer-btn">Time Left: {secondsLeft}s</button>
+                            <div className="quiz-tools">
+                                <button className="tool-btn" onClick={onZoomOut} disabled={zoomLevel <= 0.5} aria-label="Zoom out"><FiZoomOut /></button>
+                                <button className="tool-btn" onClick={onZoomIn} disabled={zoomLevel >= 2} aria-label="Zoom in"><FiZoomIn /></button>
+                                <button className="tool-btn ai-explainer-btn" onClick={onOpenAiModal} disabled={!isAnswered} aria-label="AI Explainer"><FaMagic/></button>
+                                <button className="tool-btn fifty-fifty-btn" onClick={onUseFiftyFifty} disabled={isFiftyFiftyUsed || isAnswered}>50:50</button>
+                                <button className="tool-btn" onClick={onOpenSettings} aria-label="Open settings"><FiSettings /></button>
+                            </div>
+                        </div>
+                         <div className="timer-bar-container">
+                            <div 
+                                className={`timer-bar ${isEnding && !isAnswered ? 'ending' : ''} ${flashClass}`}
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-            
-            <div className="quiz-main-header">
-                <button
-                    className="quiz-collapsible-trigger"
-                    onClick={() => setIsStatsVisible(!isStatsVisible)}
-                    aria-expanded={isStatsVisible}
-                    aria-controls="quiz-stats-collapsible"
-                >
-                    <h3 className="quiz-subject-header">{question.classification.subject} <FiHelpCircle /></h3>
-                    <FiChevronDown className={`chevron-icon ${isStatsVisible ? 'open' : ''}`} />
-                </button>
-                <div className="quiz-controls-toolbar">
-                    <button className="timer-btn">Time Left: {secondsLeft}s</button>
-                    <div className="quiz-tools">
-                        <button className="tool-btn" onClick={onZoomOut} disabled={zoomLevel <= 0.5} aria-label="Zoom out"><FiZoomOut /></button>
-                        <button className="tool-btn" onClick={onZoomIn} disabled={zoomLevel >= 2} aria-label="Zoom in"><FiZoomIn /></button>
-                        <button className="tool-btn ai-explainer-btn" onClick={onOpenAiModal} disabled={!isAnswered} aria-label="AI Explainer"><FaMagic/></button>
-                        <button className="tool-btn fifty-fifty-btn" onClick={onUseFiftyFifty} disabled={isFiftyFiftyUsed || isAnswered}>50:50</button>
-                        <button className="tool-btn" onClick={onOpenSettings} aria-label="Open settings"><FiSettings /></button>
-                    </div>
-                </div>
-                 <div className="timer-bar-container">
-                    <div 
-                        className={`timer-bar ${isEnding && !isAnswered ? 'ending' : ''} ${flashClass}`}
-                        style={{ width: `${progress}%` }}
-                    />
-                </div>
-            </div>
             
             <div className="quiz-scrollable-content">
                 <QuestionInfo 
@@ -1168,10 +1167,10 @@ function NavigationPanel({
   onJumpToQuestion, triggerRef, bookmarked, markedForReview, onSubmitAndReview
 }: {
   isOpen: boolean; onClose: () => void; questions: Question[];
-  userAnswers: { [key: number]: string }; currentQuestionIndex: number;
+  userAnswers: { [key: string]: string }; currentQuestionIndex: number;
   onJumpToQuestion: (index: number) => void;
   triggerRef: React.RefObject<HTMLButtonElement>;
-  bookmarked: number[]; markedForReview: number[]; onSubmitAndReview: () => void;
+  bookmarked: string[]; markedForReview: string[]; onSubmitAndReview: () => void;
 }) {
   const portalRoot = document.getElementById('portal-root');
   const panelRef = useRef<HTMLDivElement>(null);
@@ -1328,20 +1327,39 @@ function NavigationPanel({
 }
 
 function ReviewSection({
-  questions, userAnswers, onBackToScore, bookmarkedQuestions
+  questions, userAnswers, onBackToScore, bookmarkedQuestions, onGoHome
 }: {
-  questions: Question[], userAnswers: {[key: number]: string},
-  onBackToScore: () => void, bookmarkedQuestions: number[]
+  questions: Question[], userAnswers: {[key: string]: string},
+  onBackToScore: () => void, bookmarkedQuestions: string[],
+  onGoHome: () => void;
 }) {
   const [filter, setFilter] = useState<'all' | 'correct' | 'incorrect' | 'bookmarked'>('all');
   const [reviewIndex, setReviewIndex] = useState(0);
+
+  const reviewCounts = React.useMemo(() => {
+    const counts = {
+      all: questions.length,
+      correct: 0,
+      incorrect: 0,
+      bookmarked: bookmarkedQuestions.length,
+    };
+    questions.forEach(q => {
+      const answer = userAnswers[q.id];
+      if (answer === q.correct) {
+        counts.correct++;
+      } else if (answer && answer !== 'SKIPPED' && answer !== 'TIME_UP' && answer !== q.correct) {
+        counts.incorrect++;
+      }
+    });
+    return counts;
+  }, [questions, userAnswers, bookmarkedQuestions]);
 
   const filteredQuestions = React.useMemo(() => {
     const filtered = questions.filter(q => {
       const userAnswer = userAnswers[q.id];
       if (filter === 'all') return true;
       if (filter === 'correct') return userAnswer === q.correct;
-      if (filter === 'incorrect') return userAnswer && userAnswer !== q.correct;
+      if (filter === 'incorrect') return userAnswer && userAnswer !== q.correct && userAnswer !== 'SKIPPED' && userAnswer !== 'TIME_UP';
       if (filter === 'bookmarked') return bookmarkedQuestions.includes(q.id);
       return false;
     });
@@ -1355,12 +1373,16 @@ function ReviewSection({
     <div className="review-section">
       <div className="review-header">
         <h2>Review Answers</h2>
-        <button onClick={onBackToScore} className="back-btn">Back to Score</button>
+        <div className="review-header-actions">
+          <button onClick={onGoHome} className="home-btn">Go Home</button>
+          <button onClick={onBackToScore} className="back-btn">Back to Score</button>
+        </div>
       </div>
        <SegmentedControl
           options={['all', 'correct', 'incorrect', 'bookmarked']}
-          selectedOptions={[filter]} // Adapted for multi-select component
+          selectedOptions={[filter]}
           onOptionToggle={(option) => setFilter(option as any)}
+          counts={reviewCounts}
         />
       <div className="review-questions-list">
         {currentQuestion ? (
@@ -1378,7 +1400,7 @@ function ReviewSection({
         ) : <p>No questions match this filter.</p>}
       </div>
       {filteredQuestions.length > 1 && (
-        <div className="review-navigation quiz-navigation">
+        <div className="review-navigation">
           <button onClick={() => setReviewIndex(i => i - 1)} disabled={reviewIndex === 0}>Previous</button>
           <span>{reviewIndex + 1} / {filteredQuestions.length}</span>
           <button onClick={() => setReviewIndex(i => i + 1)} disabled={reviewIndex === filteredQuestions.length - 1}>Next</button>
@@ -1490,11 +1512,10 @@ function App() {
   // State for the active quiz
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<{[key: number]: string}>({});
-  const [isFiftyFiftyUsed, setIsFiftyFiftyUsed] = useState(false);
-  const [hiddenOptions, setHiddenOptions] = useState<{[key: number]: string[]}>({});
-  const [bookmarkedQuestions, setBookmarkedQuestions] = useLocalStorageState<number[]>('bookmarkedQuestions', []);
-  const [markedForReview, setMarkedForReview] = useState<number[]>([]);
+  const [userAnswers, setUserAnswers] = useState<{[key: string]: string}>({});
+  const [hiddenOptions, setHiddenOptions] = useState<{[key: string]: string[]}>({});
+  const [bookmarkedQuestions, setBookmarkedQuestions] = useLocalStorageState<string[]>('bookmarkedQuestions', []);
+  const [markedForReview, setMarkedForReview] = useState<string[]>([]);
   
   // UI State
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -1506,8 +1527,8 @@ function App() {
   const [zoomLevel, setZoomLevel] = useState(1.0);
   
   // Sound effects
-  const playCorrectSound = useSound('https://actions.google.com/sounds/v1/positive/success.ogg');
-  const playIncorrectSound = useSound('https://actions.google.com/sounds/v1/negative/failure.ogg');
+  const playCorrectSound = useSound('https://www.fesliyanstudios.com/play-mp3/5744');
+  const playIncorrectSound = useSound('https://www.fesliyanstudios.com/play-mp3/7002');
 
   // Refactored logic into custom hooks for cleanliness
   const { availableTopics, availableSubTopics } = useDependentFilters({
@@ -1673,7 +1694,6 @@ function App() {
   const resetQuizState = () => {
     setCurrentQuestionIndex(0);
     setUserAnswers({});
-    setIsFiftyFiftyUsed(false);
     setHiddenOptions({});
     setMarkedForReview([]);
     (window as any).quizAppGlobals.userAnswers = {};
@@ -1706,7 +1726,7 @@ function App() {
     setSelectedFilters(initialFilters);
   };
 
-  const handleAnswerSelect = (questionId: number, answer: string) => {
+  const handleAnswerSelect = (questionId: string, answer: string) => {
     if (userAnswers[questionId]) return;
     setUserAnswers(prev => {
       const newAnswers = { ...prev, [questionId]: answer };
@@ -1751,7 +1771,6 @@ function App() {
   const handleNextQuestion = () => {
     if (currentQuestionIndex < quizQuestions.length - 1) {
         setCurrentQuestionIndex(i => i + 1);
-        setIsFiftyFiftyUsed(false);
     } else {
         handleEndQuiz();
     }
@@ -1760,7 +1779,6 @@ function App() {
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
         setCurrentQuestionIndex(i => i - 1);
-        setIsFiftyFiftyUsed(false);
     }
   };
 
@@ -1773,22 +1791,21 @@ function App() {
 
   const handleUseFiftyFifty = () => {
     const currentQuestion = quizQuestions[currentQuestionIndex];
-    if (isFiftyFiftyUsed || userAnswers[currentQuestion.id]) return;
+    if (hiddenOptions[currentQuestion.id] || userAnswers[currentQuestion.id]) return;
 
     const incorrectOptions = currentQuestion.options.filter(opt => opt !== currentQuestion.correct);
     const toHide = incorrectOptions.sort(() => 0.5 - Math.random()).slice(0, 2);
 
     setHiddenOptions(prev => ({ ...prev, [currentQuestion.id]: toHide }));
-    setIsFiftyFiftyUsed(true);
   };
   
-  const handleToggleBookmark = (questionId: number) => {
+  const handleToggleBookmark = (questionId: string) => {
     setBookmarkedQuestions(prev => 
       prev.includes(questionId) ? prev.filter(id => id !== questionId) : [...prev, questionId]
     );
   };
 
-  const handleToggleMarkForReview = (questionId: number) => {
+  const handleToggleMarkForReview = (questionId: string) => {
     setMarkedForReview(prev => 
       prev.includes(questionId) ? prev.filter(id => id !== questionId) : [...prev, questionId]
     );
@@ -1809,9 +1826,9 @@ function App() {
   const handlePlayAgain = () => setView('filter');
   const handleReviewAnswers = () => setView('review');
   const handleBackToScore = () => setView('score');
+  const handleGoHome = () => setView('filter');
   const handleJumpToQuestion = (index: number) => {
     setCurrentQuestionIndex(index);
-    setIsFiftyFiftyUsed(!!hiddenOptions[quizQuestions[index]?.id]);
     setIsNavOpen(false);
   };
 
@@ -1845,8 +1862,8 @@ function App() {
      let correct = 0;
      let wrong = 0;
      Object.keys(userAnswers).forEach(questionId => {
-        const question = quizQuestions.find(q => q.id === Number(questionId));
-        const answer = userAnswers[Number(questionId)];
+        const question = quizQuestions.find(q => q.id === questionId);
+        const answer = userAnswers[questionId];
         if (question) {
             if (answer === question.correct) {
                 correct++;
@@ -1965,6 +1982,7 @@ function App() {
             <ReviewSection
               questions={quizQuestions} userAnswers={userAnswers}
               onBackToScore={handleBackToScore} bookmarkedQuestions={bookmarkedQuestions}
+              onGoHome={handleGoHome}
             />
           </motion.div>
         )}

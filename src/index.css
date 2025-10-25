@@ -704,35 +704,6 @@ input:checked + .slider:before {
   color: #9e9e9e;
 }
 
-/* Loading Spinner */
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 50vh;
-}
-
-.loading-spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
-.dark-mode .loading-spinner {
-  border-color: #444;
-  border-top-color: #8ab4f8;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-
 /* --- Quiz View Styles v3.1 --- */
 
 .quiz-top-header {
@@ -1341,6 +1312,95 @@ input:checked + .slider:before {
 .score-summary span { font-weight: 600; }
 .score-actions { display: flex; flex-wrap: wrap; gap: 1rem; width: 100%; margin-top: 1rem; }
 .play-again-btn, .review-answers-btn, .share-results-btn { flex: 1; min-width: 150px; padding: 1rem; font-size: 1.1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+
+/* --- Review Section --- */
+.review-section {
+  text-align: left;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.review-header h2 {
+  margin: 0;
+}
+
+.review-header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.back-btn, .home-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #dadce0;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.back-btn {
+  background-color: #f1f3f4;
+  color: #3c4043;
+}
+
+.dark-mode .back-btn {
+  background-color: #3c4043;
+  color: #e8eaed;
+  border-color: #5f63f8;
+}
+
+.back-btn:hover {
+  background-color: #e8eaed;
+}
+
+.dark-mode .back-btn:hover {
+  background-color: #4a4e52;
+}
+
+.home-btn {
+  background-color: #1a73e8;
+  color: #fff;
+  border-color: transparent;
+}
+
+.home-btn:hover {
+  background-color: #1865c7;
+}
+
+.dark-mode .home-btn {
+  background-color: #8ab4f8;
+  color: #1e1e1e;
+}
+
+.review-questions-list {
+  margin-top: 2rem;
+}
+
+.review-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+.dark-mode .review-navigation {
+  border-top-color: #424242;
+}
+.review-navigation button {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
 
 /* --- Navigation Panel --- */
 .nav-overlay {

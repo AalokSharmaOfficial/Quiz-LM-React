@@ -1,8 +1,30 @@
-# React Quiz LM (v5.1)
+# 1. Project Title: React Quiz LM (v5.1)
 
 A modern, feature-rich quiz application built with React and Vite, designed for comprehensive exam preparation with a polished UI and an advanced, data-driven filtering system. Deployed with a professional CI/CD workflow.
 
-## Live Demo
+---
+
+# ⭐ The Golden Rule: Dual-Environment Development ⭐
+
+**ATTENTION ALL DEVELOPERS: This project has a unique development workflow that you MUST follow.**
+
+This application is maintained in two parallel environments:
+
+1.  **AI Studio Live Environment:** A monolithic structure using the root-level `index.tsx` and `index.css` files. This is used for live, interactive development within certain tools.
+2.  **Standard Vite Build Environment:** A professionally structured, modular project located within the `src/` directory. This is used for local development, testing, and automated deployment via GitHub Actions.
+
+### The Rule: Update Both, Always.
+
+Any change—whether it's a new feature, a bug fix, a UI tweak, or a content update—**MUST be implemented synchronously in BOTH places**.
+
+-   If you change `src/components/QuizView/QuizSection.tsx`, you **MUST** make the equivalent change in the `QuizSection` function within the root `index.tsx`.
+-   If you add a style to `src/index.css`, you **MUST** add that same style to the root `index.css`.
+
+Failure to do this will lead to discrepancies between the two versions, breaking one of the environments and creating significant maintenance issues. **No exceptions.**
+
+---
+
+## 2. Live Demo
 
 The application is automatically deployed to GitHub Pages. The live version can be accessed at:
 
@@ -12,7 +34,7 @@ The application is automatically deployed to GitHub Pages. The live version can 
 
 ---
 
-## Core Features
+## 3. Core Features
 
 ### Advanced Dynamic Quiz Customization
 *   **Modern UI/UX:** A clean, professional, and intuitive interface that organizes filters for an enhanced user experience.
@@ -39,11 +61,9 @@ The application is automatically deployed to GitHub Pages. The live version can 
 
 ---
 
-## Deployment Workflow (Vite + GitHub Actions + GitHub Pages)
+## 4. Deployment Workflow (Vite + GitHub Actions + GitHub Pages)
 
-The project is configured with a professional Continuous Integration/Continuous Deployment (CI/CD) pipeline using GitHub Actions to deploy to GitHub Pages.
-
-The workflow is defined in `.github/workflows/deploy.yml` and functions as follows:
+The project is configured with a professional Continuous Integration/Continuous Deployment (CI/CD) pipeline using GitHub Actions to deploy to GitHub Pages. The workflow is defined in `.github/workflows/deploy.yml` and functions as follows:
 
 1.  **Trigger:** The workflow is automatically triggered on every `git push` to the `main` branch.
 2.  **Setup:** A fresh virtual environment (Ubuntu) is spun up. It checks out the repository code and installs the correct Node.js version.
@@ -60,23 +80,19 @@ The workflow is defined in `.github/workflows/deploy.yml` and functions as follo
 
 ---
 
-## How to Add New Questions
+## 5. How to Add New Questions
 
-Updating the question bank is a streamlined process. Any changes committed to the `public/questions.json` file in the `main` branch will automatically be reflected on the live site.
-
-> **Important:** Always follow the structure defined in `Content-creation-guidelines.txt` precisely to avoid breaking the application.
+Updating the question bank is now a streamlined process. Any changes committed to the `public/questions.json` file in the `main` branch on GitHub will automatically be reflected on the live site. Ensure you follow the `Content-creation-guidelines.txt` precisely.
 
 ### Method 1: The Recommended Local Workflow (Safe & Tested)
-
 This is the safest method as it allows you to test your changes and ensure the JSON file is valid before deploying.
-
 1.  **Edit Locally:** Open the project on your computer and add your new question objects to the `public/questions.json` file.
 2.  **Test Your Changes:** Open your terminal, navigate to the project directory, and run the development server:
     ```bash
     npm run dev
     ```
     Open the local URL (e.g., `http://localhost:5173`) in your browser. Verify that the app loads and your new questions appear correctly. This step is crucial to catch any JSON syntax errors.
-3.  **Commit and Push:** Once you confirm everything works, stop the server (`Ctrl+C`). Then, use the following git commands:
+3.  **Commit and Push:** Once you confirm everything works, stop the server (Ctrl+C). Then, use the following git commands in your terminal:
     ```bash
     # Stage the changes
     git add public/questions.json
@@ -90,10 +106,8 @@ This is the safest method as it allows you to test your changes and ensure the J
 4.  **Done!** GitHub Actions will now automatically build and deploy your updated site.
 
 ### Method 2: The GitHub Website Workflow (Quick & Convenient)
-
 This method is faster for simple additions but carries the risk of deploying a broken file if there are syntax errors.
-
-1.  **Navigate to the file:** Go to the project's repository on the GitHub website. Click on the `public` folder, then click on the `questions.json` file.
+1.  **Navigate to the file:** Go to your project's repository on the GitHub website. Click on the `public` folder, then click on the `questions.json` file.
 2.  **Edit the file:** Click the pencil icon ("Edit this file") on the top right.
 3.  **Add questions:** Carefully add your new question objects to the JSON array, ensuring all commas and brackets are correct.
 4.  **Commit changes:** Scroll to the bottom. In the "Commit changes" box, type a descriptive commit message (e.g., "docs: Add 10 new Geography questions"). Ensure "Commit directly to the `main` branch" is selected and click the green "Commit changes" button.
@@ -104,7 +118,7 @@ This method is faster for simple additions but carries the risk of deploying a b
 
 ---
 
-## Technology Stack & Architecture
+## 6. Technology Stack & Architecture
 
 *   **Build Tool:** Vite
 *   **Frontend:** React, TypeScript, CSS3
@@ -113,29 +127,17 @@ This method is faster for simple additions but carries the risk of deploying a b
 
 ---
 
-## Setup and Run Locally
+## 7. Setup and Run Locally
 
-1.  Clone the repository:
-    ```bash
-    git clone <your-repo-url>
-    ```
-2.  Navigate into the directory:
-    ```bash
-    cd Quiz-LM-React
-    ```
-3.  Install dependencies:
-    ```bash
-    npm install
-    ```
-4.  Start the development server:
-    ```bash
-    npm run dev
-    ```
+1.  Clone the repository: `git clone <your-repo-url>`
+2.  Navigate into the directory: `cd [project-directory]`
+3.  Install dependencies: `npm install`
+4.  Start the development server: `npm run dev`
 5.  Open your browser and navigate to the local URL provided by Vite.
 
 ---
 
-## Database Population (One-time Setup)
+## 8. Database Population (One-time Setup)
 
 If you are setting up the project with a new database backend (e.g., Neon), a script is provided to generate the necessary SQL.
 
