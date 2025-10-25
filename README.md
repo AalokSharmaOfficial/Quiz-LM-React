@@ -10,17 +10,17 @@ A modern, feature-rich quiz application built with React and Vite, designed for 
 
 This application is maintained in two parallel environments:
 
-1.  **AI Studio Live Environment:** A monolithic structure using the root-level `index.tsx` and `index.css` files. This is used for live, interactive development within certain tools.
+1.  **GOOGLE AI Studio Live Environment:** A monolithic structure using the root-level `index.tsx` and `index.css` files. This is used for live, interactive development within certain tools.
 2.  **Standard Vite Build Environment:** A professionally structured, modular project located within the `src/` directory. This is used for local development, testing, and automated deployment via GitHub Actions.
 
 ### The Rule: Update Both, Always.
 
-Any change—whether it's a new feature, a bug fix, a UI tweak, or a content update—**MUST be implemented synchronously in BOTH places**.
+Any change—whether it's a new feature, a bug fix, a UI tweak, or a content update— **MUST be implemented ANYWHERE IT NEEDED EXCEPT THE ROOT LEVEL TWO SPECIFIC FILES namely - `index.tsx` and `index.css` at root level.**. HOWEVER You are Free to make necessary change in any other files of root level or anywhere.
 
--   If you change `src/components/QuizView/QuizSection.tsx`, you **MUST** make the equivalent change in the `QuizSection` function within the root `index.tsx`.
--   If you add a style to `src/index.css`, you **MUST** add that same style to the root `index.css`.
+- So If you change `src/components/QuizView/QuizSection.tsx`, you **MUST** make the equivalent change in the `QuizSection` function within the /src folder `index.tsx`only and not the root level `index.tsx`.
+-   If you add a style to `src/index.css`, you **should not** add that same style to the root `index.css` leave it at the owner He will do it himself. This will save your time.
 
-Failure to do this will lead to discrepancies between the two versions, breaking one of the environments and creating significant maintenance issues. **No exceptions.**
+Failure to do this will lead to wastage of time and resources. **No exceptions.**
 
 ---
 
@@ -28,9 +28,7 @@ Failure to do this will lead to discrepancies between the two versions, breaking
 
 The application is automatically deployed to GitHub Pages. The live version can be accessed at:
 
-**[https://<your-github-username>.github.io/Quiz-LM-React/](https://<your-github-username>.github.io/Quiz-LM-React/)**
-
-*(Replace `<your-github-username>` with the actual GitHub username where the repository is hosted.)*
+**[https://aaloksharmaofficial.github.io/Quiz-LM-React/](https://aaloksharmaofficial.github.io/Quiz-LM-React/)**
 
 ---
 

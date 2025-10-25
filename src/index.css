@@ -1,5 +1,5 @@
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   background-color: #f0f2f5;
   color: #333;
@@ -81,6 +81,7 @@ body[data-theme='dark'] *:focus-visible {
 .view-quiz .main-content {
   max-width: 800px;
   margin: 1.5rem auto;
+  padding: 0 1rem;
 }
 
 
@@ -707,8 +708,6 @@ input:checked + .slider:before {
 /* --- Quiz View Styles v3.1 --- */
 
 .quiz-top-header {
-  position: sticky;
-  top: 0;
   background-color: #ffffff;
   padding: 1rem 2rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -1088,6 +1087,14 @@ input:checked + .slider:before {
 
 .question-content-wrapper {
   margin-bottom: 1.5rem;
+  border: 1px solid #a5d6a7;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f1f8e9, #e8f5e9);
+}
+.dark-mode .question-content-wrapper {
+  border-color: #388e3c;
+  background: linear-gradient(135deg, #1b2631, #18222c);
 }
 
 .question-text {
@@ -1104,18 +1111,19 @@ input:checked + .slider:before {
 }
 
 .hindi-text {
+  font-family: 'Noto Sans Devanagari', sans-serif;
   font-size: 0.9em;
   color: #5f6368;
 }
 .dark-mode .hindi-text {
   color: #bdc1c6;
 }
-.question-text hr, .option-content hr {
+.question-text hr {
   border: 0;
   border-top: 1px solid #e0e0e0;
   margin: 0.5rem 0;
 }
-.dark-mode .question-text hr, .dark-mode .option-content hr {
+.dark-mode .question-text hr {
   border-color: #424242;
 }
 
@@ -1146,7 +1154,15 @@ input:checked + .slider:before {
   color: #e8eaed;
 }
 
-.option-content { flex-grow: 1; }
+.option-content { 
+  flex-grow: 1; 
+  display: flex; 
+  flex-direction: column; 
+}
+.option-content .hindi-text {
+  margin-top: 0.25rem;
+}
+
 .feedback-icon { font-size: 1.5rem; font-weight: bold; }
 
 .option-btn.lifeline-removed {
@@ -1561,6 +1577,10 @@ input:checked + .slider:before {
     padding: 1rem;
     margin: 1rem;
     border-radius: 12px;
+  }
+  .view-quiz .main-content {
+    margin: 1rem;
+    padding: 0;
   }
   .quiz-section-card {
      padding: 1rem;

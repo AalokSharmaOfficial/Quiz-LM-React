@@ -211,7 +211,7 @@ export function App() {
         const value = getQuestionValue(q, key as keyof InitialFilters);
 
         if (key === 'tags' && Array.isArray(value)) {
-            return selected.some(tag => value.includes(tag));
+            return selected.some(tag => value.includes(tag as string));
         }
         
         if (typeof value === 'string') {

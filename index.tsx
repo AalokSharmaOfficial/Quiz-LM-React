@@ -845,7 +845,6 @@ function Option({
         >
             <div className="option-content">
                 {option}
-                <hr />
                 <span className="hindi-text">{option_hi}</span>
             </div>
             {icon}
