@@ -1591,7 +1591,7 @@ function App() {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch('/questions.json');
+        const response = await fetch('./questions.json');
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const data: Question[] = await response.json();
         setAllQuestions(data);
