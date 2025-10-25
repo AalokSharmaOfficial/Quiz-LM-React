@@ -1,5 +1,5 @@
 {
-  "name": "React example",
-  "description": "Example React app using Gemini",
+  "name": "Quiz LM",
+  "description": "react based app ",
   "requestFramePermissions": []
 }
