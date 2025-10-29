@@ -19,7 +19,7 @@ export function QuizSection({
     isFiftyFiftyUsed, onUseFiftyFifty, onTimeUp,
     isBookmarked, onToggleBookmark, isMarkedForReview, onToggleMarkForReview,
     zoomLevel, onZoomIn, onZoomOut, onOpenAiModal, onOpenSettings,
-    correctCount, wrongCount
+    correctCount, wrongCount, onScroll
 }: {
     question: Question; questionNumber: number; totalQuestions: number;
     userAnswer?: string; hiddenOptions: string[];
@@ -32,6 +32,7 @@ export function QuizSection({
     zoomLevel: number; onZoomIn: () => void; onZoomOut: () => void;
     onOpenAiModal: () => void; onOpenSettings: () => void;
     correctCount: number; wrongCount: number;
+    onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
 }) {
     const isAnswered = !!userAnswer;
     const remainingCount = totalQuestions - (correctCount + wrongCount);
@@ -106,7 +107,7 @@ export function QuizSection({
                 )}
             </AnimatePresence>
             
-            <div className="quiz-scrollable-content">
+            <div className="quiz-scrollable-content" onScroll={onScroll}>
                 <QuestionInfo 
                     question={question} 
                     currentIndex={questionNumber - 1} 

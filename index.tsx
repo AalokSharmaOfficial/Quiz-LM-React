@@ -958,7 +958,8 @@ function QuizSection({
     isFiftyFiftyUsed, onUseFiftyFifty, onTimeUp,
     isBookmarked, onToggleBookmark, isMarkedForReview, onToggleMarkForReview,
     zoomLevel, onZoomIn, onZoomOut, onOpenAiModal, onOpenSettings,
-    correctCount, wrongCount
+    correctCount, wrongCount, selectedFilters, isFullscreen, onToggleFullscreen,
+    navTriggerRef, onOpenNav
 }: {
     question: Question; questionNumber: number; totalQuestions: number;
     userAnswer?: string; hiddenOptions: string[];
@@ -971,6 +972,11 @@ function QuizSection({
     zoomLevel: number; onZoomIn: () => void; onZoomOut: () => void;
     onOpenAiModal: () => void; onOpenSettings: () => void;
     correctCount: number; wrongCount: number;
+    selectedFilters: typeof initialFilters;
+    isFullscreen: boolean;
+    onToggleFullscreen: () => void;
+    navTriggerRef: React.RefObject<HTMLButtonElement>;
+    onOpenNav: () => void;
 }) {
     const isAnswered = !!userAnswer;
     const remainingCount = totalQuestions - (correctCount + wrongCount);
@@ -1001,6 +1007,19 @@ function QuizSection({
 
     return (
         <div className="quiz-section-card">
+            <div className="quiz-top-header">
+              <Breadcrumbs filters={selectedFilters} />
+              <div className="logo">CGL Hustle</div>
+              <div className="quiz-header-controls">
+                <button className="header-control-btn" onClick={onToggleFullscreen} aria-label="Toggle Fullscreen">
+                  {isFullscreen ? <FiMinimize /> : <FiMaximize />}
+                </button>
+                <button ref={navTriggerRef} className="header-control-btn" onClick={onOpenNav} aria-label="Open question navigation">
+                  <FiMenu />
+                </button>
+              </div>
+            </div>
+
             <div className="quiz-main-header">
                 <h3 className="quiz-subject-header">{question.classification.subject} <FiHelpCircle /></h3>
                 <button
@@ -1491,7 +1510,7 @@ function AiExplainerModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
 // --- Root Application Component ---
 
 function App() {
-  const { isDarkMode, areAnimationsEnabled, isHapticEnabled, toggleHaptics } = useContext(SettingsContext);
+  const { isDarkMode, areAnimationsEnabled, isHapticEnabled } = useContext(SettingsContext);
   const [allQuestions, setAllQuestions] = useState<Question[]>([]);
   
   // State for filter options
@@ -1925,18 +1944,6 @@ function App() {
             key="quiz" initial="initial" animate="in" exit="out"
             variants={pageVariants} transition={pageTransition}
           >
-            <div className="quiz-top-header">
-              <Breadcrumbs filters={selectedFilters} />
-              <div className="logo">CGL Hustle</div>
-              <div className="quiz-header-controls">
-                <button className="header-control-btn" onClick={handleToggleFullscreen} aria-label="Toggle Fullscreen">
-                  {isFullscreen ? <FiMinimize /> : <FiMaximize />}
-                </button>
-                <button ref={navTriggerRef} className="header-control-btn" onClick={() => setIsNavOpen(true)} aria-label="Open question navigation">
-                  <FiMenu />
-                </button>
-              </div>
-            </div>
             <div className="main-content">
                <QuizSection
                 question={currentQuestion} questionNumber={currentQuestionIndex + 1}
@@ -1956,6 +1963,11 @@ function App() {
                 onOpenSettings={() => setIsSettingsOpen(true)}
                 correctCount={correctCount}
                 wrongCount={wrongCount}
+                selectedFilters={selectedFilters}
+                isFullscreen={isFullscreen}
+                onToggleFullscreen={handleToggleFullscreen}
+                navTriggerRef={navTriggerRef}
+                onOpenNav={() => setIsNavOpen(true)}
                />
             </div>
           </motion.div>

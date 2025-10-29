@@ -707,19 +707,16 @@ input:checked + .slider:before {
 /* --- Quiz View Styles v3.1 --- */
 
 .quiz-top-header {
-  position: sticky;
-  top: 0;
-  background-color: #ffffff;
-  padding: 1rem 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 100;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e0e2e6;
+  margin-bottom: 1rem;
 }
 
 .dark-mode .quiz-top-header {
-  background-color: #1e1e1e;
+  border-bottom-color: #3c4043;
 }
 
 .breadcrumbs {
@@ -782,51 +779,11 @@ input:checked + .slider:before {
   overflow: hidden;
 }
 
-@media (min-height: 700px) {
-    .quiz-section-card {
-        max-height: calc(100vh - 120px);
-    }
-}
-
 .quiz-scrollable-content {
     flex: 1 1 auto;
-    overflow-y: auto;
-    padding: 0 1rem;
-    margin: 0 -1rem;
-    scrollbar-width: thin;
-    scrollbar-color: #ccc #f1f1f1;
-}
-
-.dark-mode .quiz-scrollable-content {
-    scrollbar-color: #555 #333;
-}
-
-.quiz-scrollable-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-.quiz-scrollable-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-.dark-mode .quiz-scrollable-content::-webkit-scrollbar-track {
-    background: #333;
-}
-
-.quiz-scrollable-content::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
-}
-
-.dark-mode .quiz-scrollable-content::-webkit-scrollbar-thumb {
-    background: #555;
-}
-
-.quiz-scrollable-content::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
-}
-.dark-mode .quiz-scrollable-content::-webkit-scrollbar-thumb:hover {
-    background: #777;
+    /* overflow-y: auto; NO LONGER SCROLLS INTERNALLY */
+    padding: 0;
+    margin: 0;
 }
 
 .quiz-section-card > *:not(.quiz-scrollable-content) {
@@ -1528,6 +1485,34 @@ input:checked + .slider:before {
 @keyframes flash-red { from { background-color: #ea4335; } to { background-color: #ea4335; } }
 .animate-shake { animation: shake-horizontal 0.5s ease-in-out; }
 .animate-pulse { animation: pulse 0.5s ease-in-out; }
+
+/* Loading spinner for initial load */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+.dark-mode .loading-spinner {
+  border-color: #3c4043;
+  border-top-color: #8ab4f8;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 /* --- Responsiveness --- */
 @media (max-width: 840px) {

@@ -5,53 +5,10 @@ A modern, feature-rich quiz application built with React and Vite, designed for 
 ---
 ---
 
-# ⭐ The Golden Rule: All Development Happens in `src/` ⭐
+# ⭐ The Golden Rule:` ⭐
 
-**ATTENTION ALL DEVELOPERS:** This project uses a specific dual-environment workflow. To prevent build failures and merge conflicts, you **MUST** follow this rule.
-
-### 1. The Two Environments
-
-This repository maintains two parallel versions of the application:
-
-* **`src/` Directory (Your Workspace):** This is the standard, modular Vite environment. All development, testing, and pull requests happen here. This is the source of truth for our production build.
-You are still free to modify other root-level *configuration* files as needed for your task (e.g., `index.html`, `vite.config.ts`, `package.json`).
-
-* **Root Files (Owner's Zone):** The `index.tsx` and `index.css` files in the root directory. These are a special, *monolithic* (single-file) build used *only* for a live demo environment in Google AI Studio.
-
-### 2. Your Core Responsibility: Stay Inside `src/`
-
-Your work should **ONLY** be done inside the `src/` directory. but 
-You are still free to modify other root-level *configuration* files as needed for your task (e.g., `index.html`, `vite.config.ts`, `package.json`).
-
-* **DO:** Make all your changes to components, logic, and styles inside `src/`. (e.g., `src/App.tsx`, `src/components/Quiz.tsx`, `src/main.css`). 
-You are still free to modify other root-level *configuration* files as needed for your task (e.g., `index.html`, `vite.config.ts`, `package.json`). 
-
-* **DO NOT:** Edit the root-level `index.tsx` or `index.css` files for *any reason*.
-
-The project owner is solely responsible for syncing the approved changes from `src/` into the root monolithic files. Any direct edits you make to them will be overwritten and will break the live demo.
-
-### 3. Example Workflow
-
-* ✅ **CORRECT:**
-    1.  You need to add a new feature.
-    2.  You create a new file: `src/components/NewFeature.tsx`.
-    3.  You add styles to: `src/main.css`.
-    4.  You import the feature in: `src/App.tsx`.
-    5.  You commit *only* the files within the `src/` directory.
-    6. You are still free to modify other root-level *configuration* files as needed for your task (e.g., `index.html`, ).
-
-* ❌ **INCORRECT:**
-    1.  You add the new feature in `src/components/NewFeature.tsx`.
-    2.  You then open the **root `index.tsx`** and try to paste your new component code into it.
-    3.  You open the **root `index.css`** and paste your new styles.
-    *(This will cause conflicts and will be rejected.)*
-
-### 4. What *Can* You Edit at the Root Level?
-
-You are still free to modify other root-level *configuration* files as needed for your task (e.g., `index.html`, `vite.config.ts`, `package.json`).
-
-**TL;DR: Do all your work in `src/`. Never touch the root `index.tsx` or `index.css` files.**
-
+**ATTENTION ALL DEVELOPERS:** 
+Golden Rule: root level 2 files index.tsx और index.css MUST BE UPDATED AS they are single truth source for this environment of developing . and src folder also be updated as they are source for build and production. 
 ## 2. Live Demo
 
 The application is automatically deployed to GitHub Pages. The live version can be accessed at:

@@ -58,6 +58,28 @@ export function App() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1.0);
   
+  // State and ref for auto-hiding header
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const currentScrollY = e.currentTarget.scrollTop;
+    const HEADER_HEIGHT = 70; // Approximate height of the header
+
+    if (currentScrollY < HEADER_HEIGHT) {
+      // Always show near the top
+      setIsHeaderHidden(false);
+    } else if (currentScrollY > lastScrollY.current) {
+      // Scrolling down
+      setIsHeaderHidden(true);
+    } else {
+      // Scrolling up
+      setIsHeaderHidden(false);
+    }
+
+    lastScrollY.current = currentScrollY;
+  };
+
   // Sound effects
   const playCorrectSound = useSound('https://www.fesliyanstudios.com/play-mp3/5744');
   const playIncorrectSound = useSound('https://www.fesliyanstudios.com/play-mp3/7002');
@@ -89,6 +111,14 @@ export function App() {
     document.addEventListener('fullscreenchange', onFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
   }, []);
+
+  // Effect to reset header visibility when question changes
+  useEffect(() => {
+    if (view === 'quiz') {
+      setIsHeaderHidden(false);
+      lastScrollY.current = 0;
+    }
+  }, [currentQuestionIndex, view]);
 
   // Keyboard and Swipe Handlers
   useEffect(() => {
@@ -211,7 +241,7 @@ export function App() {
         const value = getQuestionValue(q, key as keyof InitialFilters);
 
         if (key === 'tags' && Array.isArray(value)) {
-            return selected.some(tag => value.includes(tag));
+            return selected.some(tag => value.includes(tag as string));
         }
         
         if (typeof value === 'string') {
@@ -457,7 +487,7 @@ export function App() {
             key="quiz" initial="initial" animate="in" exit="out"
             variants={pageVariants} transition={pageTransition}
           >
-            <div className="quiz-top-header">
+            <div className={`quiz-top-header ${isHeaderHidden ? 'hidden' : ''}`}>
               <Breadcrumbs filters={selectedFilters} />
               <div className="logo">CGL Hustle</div>
               <div className="quiz-header-controls">
@@ -471,6 +501,7 @@ export function App() {
             </div>
             <div className="main-content">
                <QuizSection
+                onScroll={handleScroll}
                 question={currentQuestion} questionNumber={currentQuestionIndex + 1}
                 totalQuestions={quizQuestions.length}
                 userAnswer={userAnswers[currentQuestion.id]}
