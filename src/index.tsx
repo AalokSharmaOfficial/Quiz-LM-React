@@ -749,20 +749,23 @@ function FilterSection({
 }
 
 // --- Quiz View Components ---
-function Breadcrumbs({ filters, onGoHome }: { filters: typeof initialFilters; onGoHome: () => void; }) {
-    const allFilterValues = Object.values(filters).flat();
-    
-    const getFilterText = () => {
-        if (allFilterValues.length === 0) return '';
-        return `(${allFilterValues.join(', ')})`;
-    }
-
-    return (
-        <div className="breadcrumbs">
-            <a href="#" onClick={(e) => { e.preventDefault(); onGoHome(); }}>Filters</a>
-            {allFilterValues.length > 0 && <span className="applied-filters-text">{getFilterText()}</span>}
-        </div>
-    );
+function Breadcrumbs({ filters }: { filters: typeof initialFilters }) {
+  const crumbs = ['Filters'];
+  if (filters.subject.length) crumbs.push(filters.subject.join(', '));
+  if (filters.topic.length) crumbs.push(filters.topic.join(', '));
+  if (filters.subTopic.length) crumbs.push(filters.subTopic.join(', '));
+  if (filters.difficulty.length) crumbs.push(filters.difficulty.join(', '));
+  
+  return (
+    <div className="breadcrumbs">
+      {crumbs.map((crumb, index) => (
+        <React.Fragment key={index}>
+          <span>{crumb}</span>
+          {index < crumbs.length - 1 && <FiChevronsRight />}
+        </React.Fragment>
+      ))}
+    </div>
+  );
 }
 
 function QuizStatsBar({ correct, wrong, remaining }: { correct: number, wrong: number, remaining: number }) {
@@ -842,6 +845,7 @@ function Option({
         >
             <div className="option-content">
                 {option}
+                <hr />
                 <span className="hindi-text">{option_hi}</span>
             </div>
             {icon}
@@ -885,6 +889,7 @@ function QuestionComponent({
         <div className="question-content-wrapper" style={{ fontSize: getFontSize(1) }}>
             <div className="question-text">
               <div dangerouslySetInnerHTML={{ __html: question.question }} />
+              <hr />
               <div className="hindi-text" dangerouslySetInnerHTML={{ __html: question.question_hi }} />
             </div>
             <motion.div 
@@ -954,7 +959,7 @@ function QuizSection({
     isBookmarked, onToggleBookmark, isMarkedForReview, onToggleMarkForReview,
     zoomLevel, onZoomIn, onZoomOut, onOpenAiModal, onOpenSettings,
     correctCount, wrongCount, selectedFilters, isFullscreen, onToggleFullscreen,
-    navTriggerRef, onOpenNav, onGoHome
+    navTriggerRef, onOpenNav
 }: {
     question: Question; questionNumber: number; totalQuestions: number;
     userAnswer?: string; hiddenOptions: string[];
@@ -972,7 +977,6 @@ function QuizSection({
     onToggleFullscreen: () => void;
     navTriggerRef: React.RefObject<HTMLButtonElement>;
     onOpenNav: () => void;
-    onGoHome: () => void;
 }) {
     const isAnswered = !!userAnswer;
     const remainingCount = totalQuestions - (correctCount + wrongCount);
@@ -1004,7 +1008,7 @@ function QuizSection({
     return (
         <div className="quiz-section-card">
             <div className="quiz-top-header">
-              <Breadcrumbs filters={selectedFilters} onGoHome={onGoHome} />
+              <Breadcrumbs filters={selectedFilters} />
               <div className="logo">CGL Hustle</div>
               <div className="quiz-header-controls">
                 <button className="header-control-btn" onClick={onToggleFullscreen} aria-label="Toggle Fullscreen">
@@ -1041,7 +1045,7 @@ function QuizSection({
                         <OverallProgressBar current={questionNumber - 1} total={totalQuestions} />
                         <QuizStatsBar correct={correctCount} wrong={wrongCount} remaining={remainingCount} />
                         <div className="quiz-controls-toolbar">
-                            <button className="timer-btn"><FiClock /> {secondsLeft}s</button>
+                            <button className="timer-btn">Time Left: {secondsLeft}s</button>
                             <div className="quiz-tools">
                                 <button className="tool-btn" onClick={onZoomOut} disabled={zoomLevel <= 0.5} aria-label="Zoom out"><FiZoomOut /></button>
                                 <button className="tool-btn" onClick={onZoomIn} disabled={zoomLevel >= 2} aria-label="Zoom in"><FiZoomIn /></button>
@@ -1964,7 +1968,6 @@ function App() {
                 onToggleFullscreen={handleToggleFullscreen}
                 navTriggerRef={navTriggerRef}
                 onOpenNav={() => setIsNavOpen(true)}
-                onGoHome={handleGoHome}
                />
             </div>
           </motion.div>

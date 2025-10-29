@@ -721,40 +721,22 @@ input:checked + .slider:before {
 
 .breadcrumbs {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
   color: #5f6368;
-  flex-wrap: wrap;
-  text-align: left;
-  flex: 1;
-  min-width: 0;
-}
-.breadcrumbs a {
-  color: #1a73e8;
-  text-decoration: none;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-.breadcrumbs a:hover {
-  text-decoration: underline;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .dark-mode .breadcrumbs {
   color: #9e9e9e;
-}
-.dark-mode .breadcrumbs a {
-  color: #8ab4f8;
-}
-.applied-filters-text {
-  word-break: break-word;
 }
 
 .logo {
   font-weight: bold;
   font-size: 1.5rem;
   color: #1a73e8;
-  flex-shrink: 0;
-  margin: 0 1rem;
 }
 .dark-mode .logo {
   color: #8ab4f8;
@@ -928,21 +910,18 @@ input:checked + .slider:before {
 }
 
 .timer-btn {
-  background: none;
-  color: #5f6368;
+  background-color: #3b4d9a;
+  color: white;
   border: none;
-  padding: 0;
-  font-size: 0.9em;
-  font-weight: 500;
-  cursor: default;
+  border-radius: 20px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: default; /* Not clickable */
   white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
 }
 .dark-mode .timer-btn {
-  background: none;
-  color: #9e9e9e;
+  background-color: #4f5b9e;
 }
 
 .timer-bar-container {
@@ -1085,13 +1064,16 @@ input:checked + .slider:before {
   font-size: 0.9em;
   color: #5f6368;
 }
-
-.question-text > .hindi-text {
-  margin-top: 0.5rem;
-}
-
 .dark-mode .hindi-text {
   color: #bdc1c6;
+}
+.question-text hr, .option-content hr {
+  border: 0;
+  border-top: 1px solid #e0e0e0;
+  margin: 0.5rem 0;
+}
+.dark-mode .question-text hr, .dark-mode .option-content hr {
+  border-color: #424242;
 }
 
 .options-grid {
@@ -1122,11 +1104,6 @@ input:checked + .slider:before {
 }
 
 .option-content { flex-grow: 1; }
-.option-content .hindi-text {
-  display: block;
-  margin-top: 0.25rem;
-}
-
 .feedback-icon { font-size: 1.5rem; font-weight: bold; }
 
 .option-btn.lifeline-removed {
