@@ -2,13 +2,122 @@
 
 A modern, feature-rich quiz application built with React and Vite, designed for comprehensive exam preparation with a polished UI and an advanced, data-driven filtering system. Deployed with a professional CI/CD workflow.
 
+## Golden Rule of Workflow
+Your Standard Golden Workflow Procedure for Adding New Features
+This guide outlines the professional workflow for adding new features to your application, ensuring your code remains clean, modular, and maintainable.
+Example Feature: "Adding a 'Practice Mode' Toggle to the Filter Page."
+This example does not require changing questions.json and focuses purely on UI and application state.
+Step 1: Plan & Deconstruct
+Before writing any code, think about the feature.
+ * What does it do? It allows the user to take the quiz without the 60-second timer per question.
+ * What new UI is needed? A toggle switch on the FilterSection component.
+ * What new logic/state is needed? A new boolean state, isPracticeMode. This state must live in src/main.tsx (inside your App component) because it's set in the FilterSection but must be read by the QuizSection to control the timer.
+ * What data is needed? None. This is a pure UI/state feature.
+Step 2: Update Your Data Structure (if needed)
+ * In this case, this feature is purely about app state, not question data.
+ * Therefore, no changes are needed to src/types.ts or public/questions.json.
+Step 3: Create/Update Components (Bottom-Up)
+ * Is there a new, small, reusable component? No. We can reuse an existing component! Your SettingsToggle component is perfect for this.
+ * Update the parent component: Go to src/components/FilterView/FilterSection.tsx. We will add props to it so it can receive the state and handler for this new toggle.
+Step 4: Add State and Logic (Top-Down)
+ * Manage State in src/main.tsx (in your App function): This is your "single source of truth." Add the new state variable:
+   ```javascript
+   const [isPracticeMode, setIsPracticeMode] = useState(false);
+   ```
+
+ * Pass Props Down:
+   * Find your FilterSection component inside the App component's JSX.
+   * Pass the state and handler down to it:
+     ```javascript
+     <FilterSection 
+  // ... existing props
+  isPracticeMode={isPracticeMode}
+  onPracticeModeToggle={() => setIsPracticeMode(prev => !prev)}
+/>
+    ```
+
+   * Find your QuizSection component inside the App component's JSX.
+   * Pass the isPracticeMode state down to it as well, so it knows whether to run the timer:
+     ```javascript
+     <QuizSection
+  // ... existing props
+  isPracticeMode={isPracticeMode}
+/>
+    ```
+
+Step 5: Integrate and Style
+ * Connect in FilterSection.tsx:
+   * Modify the FilterSection's props interface (or props type) to accept the new props:
+     ```javascript
+     // At the top of FilterSection, update its props type
+interface FilterSectionProps {
+  // ... existing props
+  isPracticeMode: boolean;
+  onPracticeModeToggle: () => void;
+}
+    ```
+
+   * Add the SettingsToggle component to the FilterSection's JSX, perhaps inside the .filter-actions div:
+     ```javascript
+     <div className="filter-actions">
+  <SettingsToggle 
+    label="Practice Mode (No Timer)" 
+    checked={isPracticeMode} 
+    onChange={onPracticeModeToggle} 
+  />
+  {/* ... existing buttons ... */}
+</div>
+    ```
+
+ * Connect in QuizSection.tsx:
+   * Modify the QuizSection's props interface to accept the new prop:
+     ```javascript
+     // At the top of QuizSection, update its props type
+interface QuizSectionProps {
+  // ... existing props
+  isPracticeMode: boolean;
+}
+    ```
+
+   * Find where you use the useTimer hook.
+   * Conditionally pass the isPaused prop to the hook so it pauses if it's practice mode:
+     ```javascript
+     const [secondsLeft] = useTimer({
+  // ... existing props
+  isPaused: isAnswered || isPracticeMode 
+});
+    ```
+
+   * (Optional) Conditionally hide the timer UI if in practice mode:
+     ```javascript
+     {!isPracticeMode && (
+  <div className="timer-bar-container">
+    {/* ... timer bar JSX ... */}
+  </div>
+)}
+    ```
+
+ * Style in src/index.css:
+   * Add any CSS you need to make the new toggle look good inside the .filter-actions div.
+⭐ Step 6: The Golden Rule (Final Check)
+This is the most important step for your development environment.
+ * NEVER add new feature code to the root-level index.tsx or index.css.
+ * ALWAYS do all of your development work inside the src/ folder.
+ * The root index.tsx should ONLY contain:
+   ```javascript
+   import './src/main.tsx';
+   ```
+
+ * The root index.css should ONLY contain:
+   ```css
+   @import './src/index.css';
+   ```
+
+By following this workflow, you ensure every new feature is built in a modular way, the data flow remains clear, and your project stays organized and professional.
+
 ---
 ---
 
-# ⭐ The Golden Rule:` ⭐
-
-**ATTENTION ALL DEVELOPERS:** 
-Golden Rule: root level 2 files index.tsx और index.css MUST BE UPDATED AS they are single truth source for this environment of developing . and src folder also be updated as they are source for build and production. 
 ## 2. Live Demo
 
 The application is automatically deployed to GitHub Pages. The live version can be accessed at:
