@@ -39,7 +39,6 @@ export function QuestionComponent({
         <div className="question-content-wrapper" style={{ fontSize: getFontSize(1) }}>
             <div className="question-text">
               <div dangerouslySetInnerHTML={{ __html: question.question }} />
-              <hr />
               <div className="hindi-text" dangerouslySetInnerHTML={{ __html: question.question_hi }} />
             </div>
             <motion.div 

@@ -5,13 +5,14 @@ import { QuestionComponent } from '../QuizView/QuestionComponent';
 import { ExplanationComponent } from '../QuizView/ExplanationComponent';
 
 export function ReviewSection({
-  questions, userAnswers, onBackToScore, bookmarkedQuestions, onGoHome
+  questions, userAnswers, onBackToScore, bookmarkedQuestions, onGoHome, initialFilter
 }: {
   questions: Question[], userAnswers: {[key: string]: string},
   onBackToScore: () => void, bookmarkedQuestions: string[],
-  onGoHome: () => void;
+  onGoHome: () => void,
+  initialFilter?: 'all' | 'correct' | 'incorrect' | 'bookmarked'
 }) {
-  const [filter, setFilter] = useState<'all' | 'correct' | 'incorrect' | 'bookmarked'>('all');
+  const [filter, setFilter] = useState<'all' | 'correct' | 'incorrect' | 'bookmarked'>(initialFilter || 'all');
   const [reviewIndex, setReviewIndex] = useState(0);
 
   const reviewCounts = useMemo(() => {
@@ -25,7 +26,7 @@ export function ReviewSection({
       const answer = userAnswers[q.id];
       if (answer === q.correct) {
         counts.correct++;
-      } else if (answer && answer !== 'SKIPPED' && answer !== 'TIME_UP' && answer !== q.correct) {
+      } else if (answer && answer !== 'SKIPPED') {
         counts.incorrect++;
       }
     });
@@ -37,7 +38,7 @@ export function ReviewSection({
       const userAnswer = userAnswers[q.id];
       if (filter === 'all') return true;
       if (filter === 'correct') return userAnswer === q.correct;
-      if (filter === 'incorrect') return userAnswer && userAnswer !== q.correct && userAnswer !== 'SKIPPED' && userAnswer !== 'TIME_UP';
+      if (filter === 'incorrect') return userAnswer && userAnswer !== q.correct && userAnswer !== 'SKIPPED';
       if (filter === 'bookmarked') return bookmarkedQuestions.includes(q.id);
       return false;
     });
@@ -45,7 +46,7 @@ export function ReviewSection({
 
   useEffect(() => {
     setReviewIndex(0);
-  }, [filteredQuestions]);
+  }, [filter]);
 
   const currentQuestion = filteredQuestions[reviewIndex];
 

@@ -1,8 +1,5 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
-/**
- * A custom hook to manage state that is persisted in localStorage.
- */
 export function useLocalStorageState<T>(key: string, defaultValue: T): [T, Dispatch<SetStateAction<T>>] {
   const [state, setState] = useState(() => {
     try {

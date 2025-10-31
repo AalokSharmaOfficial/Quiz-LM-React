@@ -1,9 +1,10 @@
 import React from 'react';
 
-export function DonutChart({ correct, incorrect, unanswered }: { correct: number, incorrect: number, unanswered: number }) {
+export function DonutChart({ correct, incorrect, unanswered, attempted }: { correct: number, incorrect: number, unanswered: number, attempted: number }) {
   const total = correct + incorrect + unanswered;
   if (total === 0) return null;
 
+  const accuracyPct = attempted > 0 ? (correct / attempted) : 0;
   const correctPct = (correct / total);
   const incorrectPct = (incorrect / total);
   
@@ -16,7 +17,7 @@ export function DonutChart({ correct, incorrect, unanswered }: { correct: number
   
   return (
     <div className="donut-chart-container">
-      <svg width="200" height="200" viewBox="0 0 100 100">
+      <svg viewBox="0 0 100 100">
         <circle className="donut-bg" cx="50" cy="50" r="45" />
         <circle 
           className="donut-segment correct" 
@@ -32,8 +33,8 @@ export function DonutChart({ correct, incorrect, unanswered }: { correct: number
         />
       </svg>
       <div className="chart-text">
-        <span className="score-percentage">{Math.round(correctPct * 100)}%</span>
-        <span className="score-label">Correct</span>
+        <span className="score-percentage">{Math.round(accuracyPct * 100)}%</span>
+        <span className="score-label">Accuracy</span>
       </div>
     </div>
   );

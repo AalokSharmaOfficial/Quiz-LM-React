@@ -41,7 +41,6 @@ export function NavigationPanel({
 
   useEffect(() => {
     if (isOpen) {
-      // Set the default open group
       const currentGroupIndex = Math.floor(currentQuestionIndex / chunkSize);
       setOpenGroups(new Set([currentGroupIndex]));
       
@@ -60,12 +59,12 @@ export function NavigationPanel({
         }
 
         if (e.key === 'Tab' && focusableElements) {
-          if (e.shiftKey) { // Shift + Tab
+          if (e.shiftKey) { 
             if (document.activeElement === firstElement) {
               lastElement?.focus();
               e.preventDefault();
             }
-          } else { // Tab
+          } else { 
             if (document.activeElement === lastElement) {
               firstElement?.focus();
               e.preventDefault();
@@ -90,7 +89,7 @@ export function NavigationPanel({
   const getStatus = (question: Question, index: number) => {
     const userAnswer = userAnswers[question.id];
     if (index === currentQuestionIndex) return 'current';
-    if (!userAnswer || userAnswer === 'TIME_UP' || userAnswer === 'SKIPPED') return 'unanswered';
+    if (!userAnswer || userAnswer === 'SKIPPED') return 'unanswered';
     if (userAnswer === question.correct) return 'correct';
     return 'incorrect';
   };

@@ -1,8 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 
-/**
- * A custom hook to manage a countdown timer.
- */
 export function useTimer({ duration, onTimeUp, key, isPaused }: { duration: number; onTimeUp: () => void; key: any; isPaused: boolean; }): [number, () => void] {
     const [secondsLeft, setSecondsLeft] = useState(duration);
     const intervalRef = useRef<number | null>(null);

@@ -1,10 +1,6 @@
-import { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction, useRef } from 'react';
 import { InitialFilters } from '../types';
 
-/**
- * Custom Hook: Manages the cascading logic for dependent filters (Subject -> Topic -> Sub-Topic).
- * It calculates available options and resets child filters when a parent filter changes.
- */
 export function useDependentFilters({ selectedFilters, setSelectedFilters, classificationMap }: {
   selectedFilters: InitialFilters;
   setSelectedFilters: Dispatch<SetStateAction<InitialFilters>>;
@@ -14,7 +10,6 @@ export function useDependentFilters({ selectedFilters, setSelectedFilters, class
   const [availableSubTopics, setAvailableSubTopics] = useState<string[]>([]);
   const isInitialMount = useRef(true);
 
-  // Effect to update available topics and reset child filters when subject changes
   useEffect(() => {
     const newTopics = new Set<string>();
     if (selectedFilters.subject.length > 0) {
@@ -33,7 +28,6 @@ export function useDependentFilters({ selectedFilters, setSelectedFilters, class
     }
   }, [selectedFilters.subject, classificationMap, setSelectedFilters]);
 
-  // Effect to update available sub-topics and reset child filters when topic changes
   useEffect(() => {
     const newSubTopics = new Set<string>();
     if (selectedFilters.topic.length > 0 && selectedFilters.subject.length > 0) {

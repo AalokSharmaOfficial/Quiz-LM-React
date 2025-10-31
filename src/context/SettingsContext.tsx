@@ -35,7 +35,6 @@ export const SettingsProvider = ({ children }: { children?: React.ReactNode }) =
   const toggleAnimations = () => setAreAnimationsEnabled(prev => !prev);
   const toggleSound = () => {
     setIsSoundEnabled(prev => !prev);
-    // Placeholder for sound logic
   }
   const toggleHaptics = () => {
     setIsHapticEnabled(prev => !prev);

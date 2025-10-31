@@ -1,6 +1,6 @@
 import React from 'react';
-import { FiArchive, FiSettings, FiTag } from 'react-icons/fi';
-import { FaSitemap } from 'react-icons/fa';
+import { FiArchive, FiSettings, FiTag, FiRefreshCw } from 'react-icons/fi';
+import { FaSitemap, FaRocket } from 'react-icons/fa';
 import { FilterGroup } from '../common/FilterGroup';
 import { FilterControl } from '../common/FilterControl';
 import { MultiSelectDropdown } from '../common/MultiSelectDropdown';
@@ -8,7 +8,6 @@ import { SegmentedControl } from '../common/SegmentedControl';
 import { QuickStartButtons } from './QuickStartButtons';
 import { ActiveFiltersBar } from './ActiveFiltersBar';
 import { InitialFilters } from '../../types';
-import { FiRefreshCw } from 'react-icons/fi';
 
 export function FilterSection({ 
   filterOptions,

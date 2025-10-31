@@ -1,24 +1,25 @@
 import React, {useEffect, useState, useRef, useContext, useMemo} from 'react';
 import { motion, AnimatePresence, Transition } from 'framer-motion';
 import html2canvas from 'html2canvas';
-import { FiMinimize, FiMaximize, FiMenu } from 'react-icons/fi';
+import { FiMinimize, FiMaximize, FiMenu, FiShare2 } from 'react-icons/fi';
 
 import { SettingsContext } from './context/SettingsContext';
 import { useLocalStorageState } from './hooks/useLocalStorageState';
 import { useDependentFilters } from './hooks/useDependentFilters';
 import { useFilterCounts } from './hooks/useFilterCounts';
 import { useSound } from './hooks/useSound';
-// FIX: Import 'filterKeys' and 'getQuestionValue' to resolve 'Cannot find name' errors.
+// FIX: Import 'filterKeys' and 'getQuestionValue' to resolve reference errors.
 import { Question, InitialFilters, initialFilters, filterKeys, getQuestionValue } from './types';
 
 import { FilterSection } from './components/FilterView/FilterSection';
-import { Breadcrumbs } from './components/QuizView/Breadcrumbs';
 import { QuizSection } from './components/QuizView/QuizSection';
 import { ScoreSection } from './components/ScoreView/ScoreSection';
 import { ReviewSection } from './components/ReviewView/ReviewSection';
 import { NavigationPanel } from './components/QuizView/NavigationPanel';
 import { SettingsModal } from './components/modals/SettingsModal';
 import { AiExplainerModal } from './components/modals/AiExplainerModal';
+
+const QUIZ_DURATION_SECONDS = 60;
 
 // --- Root Application Component ---
 
@@ -45,9 +46,11 @@ export function App() {
   const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<{[key: string]: string}>({});
+  const [timePerQuestion, setTimePerQuestion] = useState<{[key: string]: number}>({});
   const [hiddenOptions, setHiddenOptions] = useState<{[key: string]: string[]}>({});
   const [bookmarkedQuestions, setBookmarkedQuestions] = useLocalStorageState<string[]>('bookmarkedQuestions', []);
   const [markedForReview, setMarkedForReview] = useState<string[]>([]);
+  const [reviewFilter, setReviewFilter] = useState<'all' | 'correct' | 'incorrect' | 'bookmarked'>();
   
   // UI State
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -58,28 +61,6 @@ export function App() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1.0);
   
-  // State and ref for auto-hiding header
-  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
-  const lastScrollY = useRef(0);
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const currentScrollY = e.currentTarget.scrollTop;
-    const HEADER_HEIGHT = 70; // Approximate height of the header
-
-    if (currentScrollY < HEADER_HEIGHT) {
-      // Always show near the top
-      setIsHeaderHidden(false);
-    } else if (currentScrollY > lastScrollY.current) {
-      // Scrolling down
-      setIsHeaderHidden(true);
-    } else {
-      // Scrolling up
-      setIsHeaderHidden(false);
-    }
-
-    lastScrollY.current = currentScrollY;
-  };
-
   // Sound effects
   const playCorrectSound = useSound('https://www.fesliyanstudios.com/play-mp3/5744');
   const playIncorrectSound = useSound('https://www.fesliyanstudios.com/play-mp3/7002');
@@ -112,14 +93,6 @@ export function App() {
     return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
   }, []);
 
-  // Effect to reset header visibility when question changes
-  useEffect(() => {
-    if (view === 'quiz') {
-      setIsHeaderHidden(false);
-      lastScrollY.current = 0;
-    }
-  }, [currentQuestionIndex, view]);
-
   // Keyboard and Swipe Handlers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -133,7 +106,7 @@ export function App() {
           if(keyNum >= 1 && keyNum <= 4) {
             const option = currentQuestion.options[keyNum - 1];
             if (option && !(hiddenOptions[currentQuestion.id] || []).includes(option)) {
-              handleAnswerSelect(currentQuestion.id, option);
+              handleAnswerSelect(currentQuestion.id, option, 0); 
             }
           }
       } else {
@@ -180,7 +153,6 @@ export function App() {
         setAllQuestions(data);
         (window as any).quizAppGlobals = { quizQuestions: data, userAnswers: {} };
         
-        // This logic runs once to populate initial filter options
         const newClassificationMap = new Map<string, Map<string, Set<string>>>();
         const uniqueDifficulties = new Set<string>();
         const uniqueExamNames = new Set<string>();
@@ -222,7 +194,6 @@ export function App() {
     fetchQuestions();
   }, []);
   
-  // --- Filter & Quiz Logic Handlers ---
   const handleFilterChange = (filterKey: keyof InitialFilters, value: string[]) => {
       setSelectedFilters(prevFilters => ({ ...prevFilters, [filterKey]: value }));
   };
@@ -241,7 +212,7 @@ export function App() {
         const value = getQuestionValue(q, key as keyof InitialFilters);
 
         if (key === 'tags' && Array.isArray(value)) {
-            return selected.some(tag => value.includes(tag as string));
+            return selected.some(tag => value.includes(tag));
         }
         
         if (typeof value === 'string') {
@@ -258,6 +229,7 @@ export function App() {
     setUserAnswers({});
     setHiddenOptions({});
     setMarkedForReview([]);
+    setTimePerQuestion({});
     (window as any).quizAppGlobals.userAnswers = {};
   }
 
@@ -288,13 +260,14 @@ export function App() {
     setSelectedFilters(initialFilters);
   };
 
-  const handleAnswerSelect = (questionId: string, answer: string) => {
+  const handleAnswerSelect = (questionId: string, answer: string, timeTaken: number) => {
     if (userAnswers[questionId]) return;
     setUserAnswers(prev => {
       const newAnswers = { ...prev, [questionId]: answer };
       (window as any).quizAppGlobals.userAnswers = newAnswers;
       return newAnswers;
     });
+    setTimePerQuestion(prev => ({ ...prev, [questionId]: timeTaken }));
 
     const question = quizQuestions.find(q => q.id === questionId);
     if(question?.correct === answer) {
@@ -320,7 +293,6 @@ export function App() {
   };
   
   const handleEndQuiz = () => {
-      // Mark all remaining questions as skipped
       handleQuizSubmit('score');
   }
 
@@ -347,7 +319,7 @@ export function App() {
   const handleTimeUp = () => {
     const currentQuestion = quizQuestions[currentQuestionIndex];
     if (currentQuestion && !userAnswers[currentQuestion.id]) {
-      handleAnswerSelect(currentQuestion.id, 'TIME_UP');
+      handleAnswerSelect(currentQuestion.id, 'TIME_UP', QUIZ_DURATION_SECONDS);
     }
   };
 
@@ -386,7 +358,10 @@ export function App() {
   };
 
   const handlePlayAgain = () => setView('filter');
-  const handleReviewAnswers = () => setView('review');
+  const handleReviewAnswers = (filter?: 'all' | 'correct' | 'incorrect' | 'bookmarked') => {
+    setReviewFilter(filter || 'all');
+    setView('review');
+  };
   const handleBackToScore = () => setView('score');
   const handleGoHome = () => setView('filter');
   const handleJumpToQuestion = (index: number) => {
@@ -396,30 +371,6 @@ export function App() {
 
   const currentQuestion = quizQuestions[currentQuestionIndex];
   
-  // Calculate score
-  const { correctAnswers, incorrectAnswers, unanswered } = useMemo(() => {
-    let correct = 0;
-    let incorrect = 0; // for wrongly selected answers
-    let unans = 0; // for skipped, timed-out, or not yet seen
-
-    quizQuestions.forEach(q => {
-      const userAnswer = userAnswers[q.id];
-      if (userAnswer === q.correct) {
-        correct++;
-      } else if (userAnswer && (userAnswer !== 'TIME_UP' && userAnswer !== 'SKIPPED')) {
-        incorrect++;
-      }
-    });
-    
-    // Unanswered calculation depends on the view. In 'score' or 'review' view, all questions should be accounted for.
-    if (view === 'score' || view === 'review') {
-      unans = quizQuestions.length - (correct + incorrect);
-    }
-
-    return { correctAnswers: correct, incorrectAnswers: incorrect, unanswered: unans };
-  }, [quizQuestions, userAnswers, view]);
-
-  // Live counts for the quiz view
   const { correctCount, wrongCount } = useMemo(() => {
      let correct = 0;
      let wrong = 0;
@@ -429,7 +380,7 @@ export function App() {
         if (question) {
             if (answer === question.correct) {
                 correct++;
-            } else if (answer !== 'SKIPPED') { // TIME_UP is considered wrong
+            } else if (answer !== 'SKIPPED') {
                 wrong++;
             }
         }
@@ -437,8 +388,6 @@ export function App() {
      return { correctCount: correct, wrongCount: wrong };
   }, [userAnswers, quizQuestions]);
 
-
-  // Animation variants and transitions
   const pageVariants = areAnimationsEnabled ? {
     initial: { opacity: 0, y: 20 },
     in: { opacity: 1, y: 0 },
@@ -487,26 +436,13 @@ export function App() {
             key="quiz" initial="initial" animate="in" exit="out"
             variants={pageVariants} transition={pageTransition}
           >
-            <div className={`quiz-top-header ${isHeaderHidden ? 'hidden' : ''}`}>
-              <Breadcrumbs filters={selectedFilters} />
-              <div className="logo">CGL Hustle</div>
-              <div className="quiz-header-controls">
-                <button className="header-control-btn" onClick={handleToggleFullscreen} aria-label="Toggle Fullscreen">
-                  {isFullscreen ? <FiMinimize /> : <FiMaximize />}
-                </button>
-                <button ref={navTriggerRef} className="header-control-btn" onClick={() => setIsNavOpen(true)} aria-label="Open question navigation">
-                  <FiMenu />
-                </button>
-              </div>
-            </div>
             <div className="main-content">
                <QuizSection
-                onScroll={handleScroll}
                 question={currentQuestion} questionNumber={currentQuestionIndex + 1}
                 totalQuestions={quizQuestions.length}
                 userAnswer={userAnswers[currentQuestion.id]}
                 hiddenOptions={hiddenOptions[currentQuestion.id] || []}
-                onAnswerSelect={(answer) => handleAnswerSelect(currentQuestion.id, answer)}
+                onAnswerSelect={(answer, timeTaken) => handleAnswerSelect(currentQuestion.id, answer, timeTaken)}
                 onNextQuestion={handleNextQuestion} onPreviousQuestion={handlePreviousQuestion}
                 isFiftyFiftyUsed={!!hiddenOptions[currentQuestion.id]} onUseFiftyFifty={handleUseFiftyFifty}
                 onTimeUp={handleTimeUp}
@@ -519,6 +455,12 @@ export function App() {
                 onOpenSettings={() => setIsSettingsOpen(true)}
                 correctCount={correctCount}
                 wrongCount={wrongCount}
+                selectedFilters={selectedFilters}
+                isFullscreen={isFullscreen}
+                onToggleFullscreen={handleToggleFullscreen}
+                navTriggerRef={navTriggerRef}
+                onOpenNav={() => setIsNavOpen(true)}
+                onGoHome={handleGoHome}
                />
             </div>
           </motion.div>
@@ -529,9 +471,13 @@ export function App() {
             className="page-wrapper" key="score" initial="initial" animate="in" exit="out"
             variants={pageVariants} transition={pageTransition}
           >
-            <ScoreSection 
-              correct={correctAnswers} incorrect={incorrectAnswers} unanswered={unanswered}
-              onPlayAgain={handlePlayAgain} onReviewAnswers={handleReviewAnswers}
+            <ScoreSection
+              quizQuestions={quizQuestions}
+              userAnswers={userAnswers}
+              timePerQuestion={timePerQuestion}
+              onPlayAgain={handlePlayAgain}
+              onReviewAnswers={() => handleReviewAnswers('all')}
+              onReviewIncorrect={() => handleReviewAnswers('incorrect')}
               onShare={handleShareResults}
             />
           </motion.div>
@@ -546,6 +492,7 @@ export function App() {
               questions={quizQuestions} userAnswers={userAnswers}
               onBackToScore={handleBackToScore} bookmarkedQuestions={bookmarkedQuestions}
               onGoHome={handleGoHome}
+              initialFilter={reviewFilter}
             />
           </motion.div>
         )}

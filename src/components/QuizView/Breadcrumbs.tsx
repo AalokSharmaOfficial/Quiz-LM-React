@@ -1,22 +1,18 @@
 import React from 'react';
-import { FiChevronsRight } from 'react-icons/fi';
 import { InitialFilters } from '../../types';
 
-export function Breadcrumbs({ filters }: { filters: InitialFilters }) {
-  const crumbs = ['Filters'];
-  if (filters.subject.length) crumbs.push(filters.subject.join(', '));
-  if (filters.topic.length) crumbs.push(filters.topic.join(', '));
-  if (filters.subTopic.length) crumbs.push(filters.subTopic.join(', '));
-  if (filters.difficulty.length) crumbs.push(filters.difficulty.join(', '));
-  
-  return (
-    <div className="breadcrumbs">
-      {crumbs.map((crumb, index) => (
-        <React.Fragment key={index}>
-          <span>{crumb}</span>
-          {index < crumbs.length - 1 && <FiChevronsRight />}
-        </React.Fragment>
-      ))}
-    </div>
-  );
+export function Breadcrumbs({ filters, onGoHome }: { filters: InitialFilters; onGoHome: () => void; }) {
+    const allFilterValues = Object.values(filters).flat();
+    
+    const getFilterText = () => {
+        if (allFilterValues.length === 0) return '';
+        return `(${allFilterValues.join(', ')})`;
+    }
+
+    return (
+        <div className="breadcrumbs">
+            <a href="#" onClick={(e) => { e.preventDefault(); onGoHome(); }}>Filters</a>
+            {allFilterValues.length > 0 && <span className="applied-filters-text">{getFilterText()}</span>}
+        </div>
+    );
 }

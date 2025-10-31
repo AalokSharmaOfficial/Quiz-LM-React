@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiHelpCircle, FiChevronDown, FiZoomOut, FiZoomIn, FiSettings } from 'react-icons/fi';
+import { FiHelpCircle, FiChevronDown, FiZoomOut, FiZoomIn, FiSettings, FiClock, FiMaximize, FiMinimize, FiMenu } from 'react-icons/fi';
 import { FaMagic } from 'react-icons/fa';
-import { Question } from '../../types';
+import { Question, InitialFilters } from '../../types';
 import { useTimer } from '../../hooks/useTimer';
 import { OverallProgressBar } from './OverallProgressBar';
 import { QuizStatsBar } from './QuizStatsBar';
@@ -10,6 +10,7 @@ import { QuestionInfo } from './QuestionInfo';
 import { QuestionComponent } from './QuestionComponent';
 import { ExplanationComponent } from './ExplanationComponent';
 import { QuizBottomNav } from './QuizBottomNav';
+import { Breadcrumbs } from './Breadcrumbs';
 
 const QUIZ_DURATION_SECONDS = 60;
 
@@ -19,11 +20,12 @@ export function QuizSection({
     isFiftyFiftyUsed, onUseFiftyFifty, onTimeUp,
     isBookmarked, onToggleBookmark, isMarkedForReview, onToggleMarkForReview,
     zoomLevel, onZoomIn, onZoomOut, onOpenAiModal, onOpenSettings,
-    correctCount, wrongCount, onScroll
+    correctCount, wrongCount, selectedFilters, isFullscreen, onToggleFullscreen,
+    navTriggerRef, onOpenNav, onGoHome
 }: {
     question: Question; questionNumber: number; totalQuestions: number;
     userAnswer?: string; hiddenOptions: string[];
-    onAnswerSelect: (answer: string) => void;
+    onAnswerSelect: (answer: string, timeTaken: number) => void;
     onNextQuestion: () => void; onPreviousQuestion: () => void;
     isFiftyFiftyUsed: boolean; onUseFiftyFifty: () => void;
     onTimeUp: () => void; 
@@ -32,13 +34,17 @@ export function QuizSection({
     zoomLevel: number; onZoomIn: () => void; onZoomOut: () => void;
     onOpenAiModal: () => void; onOpenSettings: () => void;
     correctCount: number; wrongCount: number;
-    onScroll: (e: React.UIEvent<HTMLDivElement>) => void;
+    selectedFilters: InitialFilters;
+    isFullscreen: boolean;
+    onToggleFullscreen: () => void;
+    navTriggerRef: React.RefObject<HTMLButtonElement>;
+    onOpenNav: () => void;
+    onGoHome: () => void;
 }) {
     const isAnswered = !!userAnswer;
     const remainingCount = totalQuestions - (correctCount + wrongCount);
     const [isStatsVisible, setIsStatsVisible] = useState(true);
 
-    // Timer logic
     const [secondsLeft] = useTimer({ 
         duration: QUIZ_DURATION_SECONDS, 
         onTimeUp, 
@@ -48,7 +54,11 @@ export function QuizSection({
     const progress = (secondsLeft / QUIZ_DURATION_SECONDS) * 100;
     const isEnding = secondsLeft <= 10;
 
-    // Flash effect logic
+    const handleAnswerSelectWithTime = (answer: string) => {
+        const timeTaken = QUIZ_DURATION_SECONDS - secondsLeft;
+        onAnswerSelect(answer, timeTaken);
+    }
+
     const [flashClass, setFlashClass] = useState('');
     useEffect(() => {
         if(isAnswered) {
@@ -63,6 +73,19 @@ export function QuizSection({
 
     return (
         <div className="quiz-section-card">
+            <div className="quiz-top-header">
+              <Breadcrumbs filters={selectedFilters} onGoHome={onGoHome} />
+              <div className="logo">CGL Hustle</div>
+              <div className="quiz-header-controls">
+                <button className="header-control-btn" onClick={onToggleFullscreen} aria-label="Toggle Fullscreen">
+                  {isFullscreen ? <FiMinimize /> : <FiMaximize />}
+                </button>
+                <button ref={navTriggerRef} className="header-control-btn" onClick={onOpenNav} aria-label="Open question navigation">
+                  <FiMenu />
+                </button>
+              </div>
+            </div>
+
             <div className="quiz-main-header">
                 <h3 className="quiz-subject-header">{question.classification.subject} <FiHelpCircle /></h3>
                 <button
@@ -88,7 +111,7 @@ export function QuizSection({
                         <OverallProgressBar current={questionNumber - 1} total={totalQuestions} />
                         <QuizStatsBar correct={correctCount} wrong={wrongCount} remaining={remainingCount} />
                         <div className="quiz-controls-toolbar">
-                            <button className="timer-btn">Time Left: {secondsLeft}s</button>
+                            <button className="timer-btn"><FiClock /> {secondsLeft}s</button>
                             <div className="quiz-tools">
                                 <button className="tool-btn" onClick={onZoomOut} disabled={zoomLevel <= 0.5} aria-label="Zoom out"><FiZoomOut /></button>
                                 <button className="tool-btn" onClick={onZoomIn} disabled={zoomLevel >= 2} aria-label="Zoom in"><FiZoomIn /></button>
@@ -107,7 +130,7 @@ export function QuizSection({
                 )}
             </AnimatePresence>
             
-            <div className="quiz-scrollable-content" onScroll={onScroll}>
+            <div className="quiz-scrollable-content">
                 <QuestionInfo 
                     question={question} 
                     currentIndex={questionNumber - 1} 
@@ -119,7 +142,7 @@ export function QuizSection({
                     question={question}
                     selectedAnswer={userAnswer}
                     hiddenOptions={hiddenOptions}
-                    onAnswerSelect={onAnswerSelect}
+                    onAnswerSelect={handleAnswerSelectWithTime}
                     zoomLevel={zoomLevel}
                 />
                 {userAnswer && (
